@@ -3,8 +3,8 @@ title: "STAT545 HW1"
 author: "Yi Yang"
 date: "8/28/2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
