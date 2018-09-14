@@ -65,9 +65,14 @@ print(paste('The predictor model is given by GPA = ', b0, '+', b1, 'ACT'))
 GPA_pd <- b0 + b1 * ACT_score
 GPA_residual <- GPA_score - GPA_pd
 SSE <- sum(GPA_residual^2)
+SSR <- sum((GPA_pd - mean(GPA_score))^2)
+SSTO <- sum((GPA_score - mean(GPA_score))^2)
 n <- length(GPA_score)
 s <- sqrt(SSE / (n - 2))
 print(paste('The residual standard deviation is', s))
+SSE
+SSR
+SSTO
 ```
   
   c) A point estimate for slope $\beta_1$ is $b_1$, and a point estimate for intercept $\beta_0$ is $b_0$.
