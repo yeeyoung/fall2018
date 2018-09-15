@@ -262,9 +262,6 @@ rho12.ub <- FisherZInv(zeta.ub)
 cat(paste('The CI is given by [',rho12.lb,',',rho12.ub,'].'))
 ```
   
-  
-  
-  
 5. Use R to complete this problem. Experience with a certain type of plastic indicates that a relation exists between the hardness (measured in Brinell units) of items molded from the plastic, and the elapsed time since termination of the molding process. Sixteen batches of the plastic were made, and one test item was molded from each batch. Each test item was randomly assigned to one of four predetermined time levels ($X = 16, 24, 32, \text{or} 40$ hours), and the hardness ($Y$) was measured after the assigned elapsed. Data is in plastic.csv
 
   a) Obtain the estimated simple linear regression model (SLR or SLM). Plot the estimated regression function and the data. Does a linear regression function appear to be a good fit?
