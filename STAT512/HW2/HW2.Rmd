@@ -157,6 +157,8 @@ We are $90\%$ certain that the true slope $\beta_1$ will fall into this confiden
 968.78 > qf(1-0.05,1,43)
 p.value <- 1 - pf(968.78,1,43)
 print(paste('P-value is ', p.value))
+R2 <- 76960 / 80376
+cat(paste('Coefficient of determination is ', R2))
 ```
   We reject the null hypothesis with the analysis of the variance.
   
@@ -196,12 +198,69 @@ print(paste('P-value is ', p.value))
   $$\text{p-value} = P(F > F^\ast;1,8) = 0.394 > 0.05$$
   Thus we fail to reject the null hypothesis.
   
-  b)  
+  b) $R^2$ is the coefficient of determination. The estimated correlation coefficient is $0.1518212$.
+```{r, warning=FALSE}
+r12 <- 0.1518212
+n <- 10
+Ts1 <- r12 * sqrt(n - 2) / sqrt(1 - r12^2)
+cat(paste('Test statistic is ', Ts1, '\n'))
+p.value1 <- (1 - pt(Ts1, n-2)) * 2
+cat(paste('p-value is ', p.value1, '\n'))
+cat(paste('R2 is estimated by', r12^2))
+```
+  Since p-value is greater than $\alpha = 0.05$, we fail to reject the null hypothesis, which means there is little linear association between GPA score and ACT score at high level of confidence significance.
   
+  c) $R^2$ in 3e) is $0.957499751169503$, MSE in 3e) is $79.44$. $R^2$ in 4a) is $0.02304967676944$, MSE in 4a) is $0.05285394$. Model 3e) seems to be a better fit, since the fitting curve in 3e) has a larger $R^2$ so that the variability of $Y$ depends much more on $X$. However, we also like a smaller MSE since it indicates that the noise is smaller. 
   
-  
-  
-  
+  d) If the first $10$ cases of a larger data set has a very small $R^2$, it is still possible that for the complete set $n > 10$, $R^2$ will not be zero. If $R^2$ is not zero for the first $10$ cases, it can still be zero for all $30$ cases. Let us first give a scatter plot for case II.
+```{r, warning=FALSE}
+# plot the scatter point in case II
+xx <- c(seq(1,15),seq(1,15))
+yy <- c(xx[1:15],30-xx[16:30])
+plot(xx,yy)
+```
+```{r,warning=FALSE}
+# Analyze the linear model
+xx1 <- xx[1:10]
+yy1 <- yy[1:10]
+first10 <- data.frame(xx1,yy1)
+first10.mod <- lm(yy1~xx1,first10)
+summary(first10.mod)
+all30 <- data.frame(xx,yy)
+all30.mod <- lm(yy~xx,all30)
+summary(all30.mod)
+```
+  For case I, let us see the following scatter plot.
+```{r, warning=FALSE}
+# plot the scatter plot in case I
+XX <- c(seq(1,5),seq(1,5),seq(11,30))
+YY1 <- c(XX[1:5],10 - XX[6:10])
+YY2 <- XX[11:30]
+YY <- c(YY1,YY2)
+plot(XX,YY)
+```
+```{r,warning=FALSE}
+# Analyze the linear model for case I
+XX1 <- XX[1:10]
+YY1 <- YY[1:10]
+First10 <- data.frame(XX1,YY1)
+First10.mod <- lm(YY1~XX1,First10)
+summary(First10.mod)
+All30 <- data.frame(XX,YY)
+All30.mod <- lm(YY~XX,All30)
+summary(All30.mod)
+```
+  e) The $95\%$ CI for the correlation coefficient is given as follows
+```{r,warning=FALSE}
+library(DescTools)
+zprime <- 1 / 2 * log((1 + r12) / (1 - r12))
+sigma.zp <- sqrt(1 / (n - 3))
+zeta.lb <- zprime - qnorm(1 - 0.05 / 2) * sigma.zp
+zeta.ub <- zprime + qnorm(1 - 0.05 / 2) * sigma.zp
+rho12.lb <- FisherZInv(zeta.lb)
+rho12.ub <- FisherZInv(zeta.ub)
+cat(paste('The CI is given by [',rho12.lb,',',rho12.ub,'].'))
+```
   
   
   
