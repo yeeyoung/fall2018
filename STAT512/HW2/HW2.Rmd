@@ -269,11 +269,42 @@ cat(paste('The CI is given by [',rho12.lb,',',rho12.ub,'].'))
   c) Plot a normal probability plot of the residuals. Perform a Shapiro-Wilk normality test on the residuals. Does the normality assumption appear to be reasonable here?
   d) Use the Brown-Forsythe test to determine whether or not the error variance varies with the level of $X$. Divide the data into two groups, $X \leq 24$, $X > 24$, use $\alpha = 0.05$. Does your conclusion support your preliminary findings in part b)?
   
+  **Solution**:
   
+  a) The SLM is plotted as below
+```{r, warning=FALSE}
+plastic.df <- read.csv('data/plastic.csv', header = TRUE)
+plastic.mod <- lm(y~x,plastic.df)
+plot(plastic.df$x, plastic.df$y)
+abline(plastic.mod,col='red')
+summary(plastic.mod)
+```
+  From the summary and $R^2_{ad} = 0.9712$, it indicates the linear regression function is a good fit.
   
+  b) Residuals against the fitted values plots are plotted below
+```{r, warning=FALSE}
+library(car)
+residualPlots(plastic.mod)
+```
+  The residual plot against the fitted value or the predictor value are confined in a horizontal rectangular band randomly without structural distribution, it means the linearity of the fitting model is reasonable. Also, the random distribution of residual points around zero line implies the constant variance and the independence of the error terms.
   
+  c) A normal probability plot and the Shapiro-Wilk normality test is given as below
+```{r, warning=FALSE}
+plastic.red <- residuals(plastic.mod)
+qqnorm(plastic.red)
+qqline(plastic.red)
+shapiro.test(plastic.red)
+```
+  From the test, we know the error terms are normally distributed.
   
-  
+  d) Brown-Forsythe test is given as
+```{r, warning=FALSE}
+library(ALSM)
+g <- rep(1,length(plastic.df$x))
+g[plastic.df$x <= 24] <- 0
+bftest(plastic.mod, g)
+```
+  P-value is greater than $\alpha = 0.05$, which means the variance of error terms are constant (fail to reject the null hypothesis).
   
   
   

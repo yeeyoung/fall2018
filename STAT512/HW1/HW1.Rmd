@@ -52,6 +52,7 @@ GPA_score <- file_df$GPA
 ACT_score <- file_df$ACT
 SSxy <- t((GPA_score - mean(GPA_score))) %*% (ACT_score - mean(ACT_score))
 SSx <- t((ACT_score - mean(ACT_score))) %*% (ACT_score - mean(ACT_score))
+SSy <- t((GPA_score - mean(GPA_score))) %*% (GPA_score - mean(GPA_score))
 b1 <- SSxy / SSx
 b0 <- mean(GPA_score) - b1 * mean(ACT_score)
 print(paste('The slope is', b1))
@@ -73,6 +74,9 @@ print(paste('The residual standard deviation is', s))
 SSE
 SSR
 SSTO
+rxy <- SSxy / sqrt(SSx * SSy)
+rxy
+n
 ```
   
   c) A point estimate for slope $\beta_1$ is $b_1$, and a point estimate for intercept $\beta_0$ is $b_0$.
