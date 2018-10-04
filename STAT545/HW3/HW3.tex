@@ -1,0 +1,1000 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={STAT545 HW3},
+            pdfauthor={Yi Yang},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{STAT545 HW3}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Yi Yang}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{9/26/2018}
+
+
+\begin{document}
+\maketitle
+
+\section{1. Problem 1: The K-means
+algorithm.}\label{problem-1-the-k-means-algorithm.}
+
+The MNIST dataset is a dataset of \(28\times 28\) images of hand-written
+digits. Download it from \url{http://yann.lecun.com/exdb/mnist/} (you
+only really need the training images and labels though). To read these
+images in R, use the script from
+\url{https://gist.github.com/brendano/39760}. Make sure you understand
+this. Note that the \(\mathrm{show\_digit}\) command displays a
+particular digit.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Since the dataset is quite large, restrict yourself to the first 1000
+  training images, and their labels. Store these as variables called
+  \(\mathrm{digits}\) and \(\mathrm{labels}\). \(\mathrm{digits}\)
+  should be a \(1000\times 784\) matrix (or its transpose). Include R
+  code.
+\item
+  Write a function \(\mathrm{my\_kmeans}\) to perform a k-means
+  clustering of the 1000 images of digits. Use Euclidean distance as
+  your distance measure between images (which can be viewed as vectors
+  in a 784 dimensional space). Your function should take 3 arguments,
+  the matrix \(\mathrm{digits}\), the number of clusters \(K\) and the
+  number of initializations \(N\). You code should consist of 3 nested
+  loops. The outermost (from \(1\) to \(N\)) cycles over random cluster
+  initializations (i.e.~you will call k-means \(N\) times with different
+  initializations). The second loop (this could be a for or while loop)
+  is the actual k-means algorithm for that initialization, and cycles
+  over the iterations of k-means. Inside this are the actual iterations
+  of k-means. Each iteration can have 2 successive loops from 1 to
+  \(K\): the first assigns observations to each cluster and the second
+  recalculates the means of each cluster. These should not require
+  further loops. (You will probably encounter empty clusters. It is
+  possible to deal with these in clever ways, but here it is sufficient
+  to assign empty clusters a random mean (just like you initialized
+  them)). Since your initializations are random, make your results
+  repeatable by using the \(\mathrm{set.seed()}\) command at the
+  beginning (you can also make the seed value a fourth argument). Your
+  function should return:
+\end{enumerate}
+
+\begin{enumerate}
+\def\labelenumi{(\alph{enumi})}
+\tightlist
+\item
+  the cluster parameters and cluster assignments for the best solution
+\item
+  the sequence of values of the loss-function over k-means iterations
+  for the best solution (this should be non-increasing) (recall from the
+  slides that the k-means loss function is the sum of the squared
+  distances of observations from their assigned means)
+\item
+  The set of \(N\) terminal loss-function values for all
+  initializations.
+\end{enumerate}
+
+Do not hardcode the number of images or their size. Include R code.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\item
+  Explain briefly what stopping criteria you used (i.e.~the details of
+  the second loop).
+\item
+  Run your code on the 1000 digits for \(K = 5, 10, 20\). Set \(N\) to a
+  largish number e.g.~25 (if this takes too long, use a smaller
+  number).For each setting of \(K\), plot the cluster means (using
+  \(\mathrm{show\_digit}\)) as well as the evolution of the
+  loss-function for the best solution (you can use a semi-log plot if
+  that is clearer). You do not have to print the other values returned
+  by the function e.g.~the cluster assignments, or the values of the
+  cluster means etc., just plots is sufficient
+\item
+  For each setting of \(K\), plot the distribution of terminal loss
+  function values (using \(\mathrm{ggplot}\)'s
+  \(\mathrm{geom\_density}()\)).
+\item
+  Explain briefly how you might choose the number of clusters \(K\).
+\end{enumerate}
+
+\subsubsection{Bonus for an extra 20
+points:}\label{bonus-for-an-extra-20-points}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\item
+  Modify your code to do k-medoids. You only need to change one part of
+  your previous code viz. the part that calculates the cluster prototype
+  given cluster assignments. The cleanest way to do this is to define a
+  function called \(\mathrm{get\_prototype}\) that takes a set of
+  observations and returns the prototype. For k-means this function just
+  returns the mean of the observations. Note that the mean can also be
+  defined as \[\mu = \arg \min_x \sum_{i = 1}^{|D|}(x - d_i)^2\] Here
+  \(D = (d_1, \dots, D_{|D|})\) is the set of images input to
+  \(\mathrm{get\_prototype}\), and the mean need not be part of this
+  set. For k-medoids, the prototype is defined as
+  \[\mu = \arg \min_{x\in D} \sum_{i = 1}^{|D|}(x - d_i)^2\] In other
+  words it finds an element in \(D\) that minimizes the sum-squared
+  distance. Include R code for your implementation of
+  \(\mathrm{get\_prototype}\) for k-mediods. You can use as many for
+  loops as you want, but the simplest is to loop over each observation
+  assigned to that cluster, calculate the sum-squared distance when that
+  is set as the prototype, and return the best choice.
+\item
+  Run k-medoids for \(K = 5, 10, 20\). Since this might take longer, you
+  can use smaller values of \(N\) as well as fewer images (e.g.~just 100
+  digits), but report what numbers you used. For each choice of \(K\),
+  show the cluster prototypes. Comment on the quality of the cluster
+  prototypes, as well as the value of the loss function vs k-means.
+\end{enumerate}
+
+\textbf{Solution:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  read the first 1000 digits and their labels
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Credit to https://gist.github.com/brendano/39760}
+\CommentTok{# Load the MNIST digit recognition dataset into R}
+
+\NormalTok{load_image_file <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(filename) \{}
+\NormalTok{  ret =}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+\NormalTok{  f =}\StringTok{ }\KeywordTok{file}\NormalTok{(filename,}\StringTok{'rb'}\NormalTok{)}
+  \KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\DecValTok{1}\NormalTok{,}\DataTypeTok{size=}\DecValTok{4}\NormalTok{,}\DataTypeTok{endian=}\StringTok{'big'}\NormalTok{)}
+\NormalTok{  ret}\OperatorTok{$}\NormalTok{n =}\StringTok{ }\KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\DecValTok{1}\NormalTok{,}\DataTypeTok{size=}\DecValTok{4}\NormalTok{,}\DataTypeTok{endian=}\StringTok{'big'}\NormalTok{)}
+\NormalTok{  nrow =}\StringTok{ }\KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\DecValTok{1}\NormalTok{,}\DataTypeTok{size=}\DecValTok{4}\NormalTok{,}\DataTypeTok{endian=}\StringTok{'big'}\NormalTok{)}
+\NormalTok{  ncol =}\StringTok{ }\KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\DecValTok{1}\NormalTok{,}\DataTypeTok{size=}\DecValTok{4}\NormalTok{,}\DataTypeTok{endian=}\StringTok{'big'}\NormalTok{)}
+\NormalTok{  x =}\StringTok{ }\KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\NormalTok{ret}\OperatorTok{$}\NormalTok{n}\OperatorTok{*}\NormalTok{nrow}\OperatorTok{*}\NormalTok{ncol,}\DataTypeTok{size=}\DecValTok{1}\NormalTok{,}\DataTypeTok{signed=}\NormalTok{F)}
+\NormalTok{  ret}\OperatorTok{$}\NormalTok{x =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(x, }\DataTypeTok{ncol=}\NormalTok{nrow}\OperatorTok{*}\NormalTok{ncol, }\DataTypeTok{byrow=}\NormalTok{T)}
+  \KeywordTok{close}\NormalTok{(f)}
+\NormalTok{  ret}
+\NormalTok{\}}
+\NormalTok{load_label_file <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(filename) \{}
+\NormalTok{  f =}\StringTok{ }\KeywordTok{file}\NormalTok{(filename,}\StringTok{'rb'}\NormalTok{)}
+  \KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\DecValTok{1}\NormalTok{,}\DataTypeTok{size=}\DecValTok{4}\NormalTok{,}\DataTypeTok{endian=}\StringTok{'big'}\NormalTok{)}
+\NormalTok{  n =}\StringTok{ }\KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\DecValTok{1}\NormalTok{,}\DataTypeTok{size=}\DecValTok{4}\NormalTok{,}\DataTypeTok{endian=}\StringTok{'big'}\NormalTok{)}
+\NormalTok{  y =}\StringTok{ }\KeywordTok{readBin}\NormalTok{(f,}\StringTok{'integer'}\NormalTok{,}\DataTypeTok{n=}\NormalTok{n,}\DataTypeTok{size=}\DecValTok{1}\NormalTok{,}\DataTypeTok{signed=}\NormalTok{F)}
+  \KeywordTok{close}\NormalTok{(f)}
+\NormalTok{  y}
+\NormalTok{\}}
+ 
+\NormalTok{show_digit <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(arr784, }\DataTypeTok{col=}\KeywordTok{gray}\NormalTok{(}\DecValTok{12}\OperatorTok{:}\DecValTok{1}\OperatorTok{/}\DecValTok{12}\NormalTok{), ...) \{}
+  \KeywordTok{image}\NormalTok{(}\KeywordTok{matrix}\NormalTok{(arr784, }\DataTypeTok{nrow=}\DecValTok{28}\NormalTok{)[,}\DecValTok{28}\OperatorTok{:}\DecValTok{1}\NormalTok{], }\DataTypeTok{col=}\NormalTok{col,}\DataTypeTok{axes=}\NormalTok{F, ...)}
+\NormalTok{\}}
+
+\CommentTok{# load the first 1000 digits and their labels}
+\NormalTok{digits.list <-}\StringTok{ }\KeywordTok{load_image_file}\NormalTok{(}\StringTok{'./data/train-images-idx3-ubyte'}\NormalTok{)}
+\NormalTok{digits <-}\StringTok{ }\NormalTok{digits.list}\OperatorTok{$}\NormalTok{x[}\DecValTok{1}\OperatorTok{:}\DecValTok{1000}\NormalTok{,]}
+\NormalTok{digits <-}\StringTok{ }\NormalTok{digits }\OperatorTok{/}\StringTok{ }\FloatTok{255.0} \CommentTok{# normalize pixels}
+\NormalTok{labels <-}\StringTok{ }\KeywordTok{load_label_file}\NormalTok{(}\StringTok{'./data/train-labels-idx1-ubyte'}\NormalTok{)}
+\KeywordTok{dim}\NormalTok{(digits)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1000  784
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# snippets to test the function of show_digits}
+\KeywordTok{show_digit}\NormalTok{(digits[}\DecValTok{12}\NormalTok{,])}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{labels[}\DecValTok{12}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{(labels[}\DecValTok{12}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "integer"
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  K-means function is given by
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# define helper functions}
+\CommentTok{# get distance between a single digit and all the centroids of clusters}
+\NormalTok{getDist <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(single.digits, centroids)\{}
+\NormalTok{  dist <-}\StringTok{ }\KeywordTok{colSums}\NormalTok{((}\KeywordTok{t}\NormalTok{(centroids) }\OperatorTok{-}\StringTok{ }\NormalTok{single.digits)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+  \KeywordTok{return}\NormalTok{(dist)}
+\NormalTok{\}}
+\CommentTok{# update the centroid for a single cluster by calculating the mean of digits in this cluster}
+\NormalTok{single.centroid <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(ric, all.digits)\{}
+\NormalTok{  num.digits.in.cluster <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(ric)}
+  \ControlFlowTok{if}\NormalTok{ (num.digits.in.cluster }\OperatorTok{>}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+    \KeywordTok{return}\NormalTok{((ric }\OperatorTok{%*%}\StringTok{ }\NormalTok{all.digits) }\OperatorTok{/}\StringTok{ }\NormalTok{num.digits.in.cluster )}
+\NormalTok{  \}}
+  \ControlFlowTok{else}\NormalTok{\{}
+    \KeywordTok{return}\NormalTok{(all.digits[}\KeywordTok{sample}\NormalTok{(}\KeywordTok{nrow}\NormalTok{(all.digits),}\DecValTok{1}\NormalTok{),])}
+\NormalTok{  \}}
+\NormalTok{\}}
+\CommentTok{# K-means algorithm starts here }
+\CommentTok{# K is num of clusters, N is num of different initializations}
+\NormalTok{my_kmeans <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(all.digits, K, N)\{}
+  \KeywordTok{set.seed}\NormalTok{(}\DecValTok{16}\NormalTok{)}
+\NormalTok{  best.cluster.parameters <-}\StringTok{ }\OtherTok{NULL} \CommentTok{# centroids}
+\NormalTok{  best.cluster.assignments <-}\StringTok{ }\OtherTok{NULL} \CommentTok{# ric}
+\NormalTok{  best.loss.seq <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\NormalTok{  terminal.losses <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\NormalTok{  best.terminal.loss <-}\StringTok{ }\OtherTok{Inf}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,N))\{}
+\NormalTok{    centroids <-}\StringTok{ }\NormalTok{all.digits[}\KeywordTok{sample}\NormalTok{(}\KeywordTok{nrow}\NormalTok{(all.digits),K), ]}
+\NormalTok{    dists <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(all.digits,}\DecValTok{1}\NormalTok{,getDist,}\DataTypeTok{centroids=}\NormalTok{centroids)}
+\NormalTok{    dists <-}\StringTok{ }\KeywordTok{t}\NormalTok{(dists)}
+\NormalTok{    loss <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{apply}\NormalTok{(dists, }\DecValTok{1}\NormalTok{, min))}
+\NormalTok{    last.loss <-}\StringTok{ }\NormalTok{loss }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{    loss.seq <-}\StringTok{ }\KeywordTok{c}\NormalTok{(loss)}
+    \ControlFlowTok{while}\NormalTok{ (}\KeywordTok{abs}\NormalTok{(last.loss }\OperatorTok{-}\StringTok{ }\NormalTok{loss) }\OperatorTok{>=}\StringTok{ }\FloatTok{1e-4}\NormalTok{) \{}
+\NormalTok{      rics <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(dists,}\DecValTok{1}\NormalTok{,}\ControlFlowTok{function}\NormalTok{(d) }\KeywordTok{ifelse}\NormalTok{(d}\OperatorTok{==}\KeywordTok{min}\NormalTok{(d),}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{))}
+\NormalTok{      rics <-}\StringTok{ }\KeywordTok{t}\NormalTok{(rics)}
+\NormalTok{      centroids <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(rics, }\DecValTok{2}\NormalTok{, single.centroid, }\DataTypeTok{all.digits=}\NormalTok{all.digits)}
+\NormalTok{      dists <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(all.digits, }\DecValTok{1}\NormalTok{, getDist, }\DataTypeTok{centroids=}\KeywordTok{t}\NormalTok{(centroids))}
+\NormalTok{      dists <-}\StringTok{ }\KeywordTok{t}\NormalTok{(dists)}
+\NormalTok{      last.loss <-}\StringTok{ }\NormalTok{loss}
+\NormalTok{      loss <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{apply}\NormalTok{(dists, }\DecValTok{1}\NormalTok{, min))}
+\NormalTok{      loss.seq <-}\StringTok{ }\KeywordTok{c}\NormalTok{(loss.seq,loss)}
+\NormalTok{    \}}
+\NormalTok{    terminal.losses <-}\StringTok{ }\KeywordTok{c}\NormalTok{(terminal.losses,loss)}
+    \ControlFlowTok{if}\NormalTok{ (best.terminal.loss }\OperatorTok{>}\StringTok{ }\NormalTok{loss)\{}
+\NormalTok{      best.terminal.loss <-}\StringTok{ }\NormalTok{loss}
+\NormalTok{      best.loss.seq <-}\StringTok{ }\NormalTok{loss.seq}
+\NormalTok{      best.cluster.assignments <-}\StringTok{ }\NormalTok{rics}
+\NormalTok{      best.cluster.parameters <-}\StringTok{ }\KeywordTok{t}\NormalTok{(centroids)}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \KeywordTok{return}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{best.cluster.parameters=}\NormalTok{best.cluster.parameters, }\DataTypeTok{best.cluster.assignments=}\NormalTok{best.cluster.assignments, }\DataTypeTok{best.loss.seq=}\NormalTok{best.loss.seq, }\DataTypeTok{terminal.losses=}\NormalTok{terminal.losses))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  The stopping criterion is set to be that the difference of the loss
+  function in the last iteration and the following iteration is smaller
+  than \(1\times 10^{-4}\).
+\item
+  The cluster means are plotted below, as well as the best loss
+  sequence.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{K <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{20}\NormalTok{)}
+\NormalTok{N <-}\StringTok{ }\DecValTok{15}
+\NormalTok{results <-}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (k }\ControlFlowTok{in}\NormalTok{ K)\{}
+\NormalTok{  results <-}\StringTok{ }\KeywordTok{append}\NormalTok{(results, }\KeywordTok{list}\NormalTok{(}\KeywordTok{my_kmeans}\NormalTok{(digits,k,N)))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  Case \(K = 5\)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (id }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{5}\NormalTok{))\{}
+  \KeywordTok{show_digit}\NormalTok{(results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.cluster.parameters[id,])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-5-1.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-5-2.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-5-3.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-5-4.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-5-5.pdf} * Case
+\(K = 10\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (id }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{))\{}
+  \KeywordTok{show_digit}\NormalTok{(results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.cluster.parameters[id,])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-1.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-2.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-3.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-4.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-5.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-6.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-7.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-8.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-9.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-6-10.pdf} * Case
+\(K = 20\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (id }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{20}\NormalTok{))\{}
+  \KeywordTok{show_digit}\NormalTok{(results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.cluster.parameters[id,])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-1.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-2.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-3.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-4.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-5.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-6.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-7.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-8.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-9.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-10.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-11.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-12.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-13.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-14.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-15.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-16.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-17.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-18.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-19.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-7-20.pdf} *
+Evolution for the best solution in case \(K = 5\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\NormalTok{best.loss.seq.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{loss=}\NormalTok{results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq,}\DataTypeTok{iter=}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{length}\NormalTok{(results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq)))}
+\KeywordTok{ggplot}\NormalTok{(best.loss.seq.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{iter,}\DataTypeTok{y=}\NormalTok{loss)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 5'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-8-1.pdf} *
+Evolution for the best solution in case \(K = 10\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.loss.seq.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{loss=}\NormalTok{results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq,}\DataTypeTok{iter=}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{length}\NormalTok{(results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq)))}
+\KeywordTok{ggplot}\NormalTok{(best.loss.seq.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{iter,}\DataTypeTok{y=}\NormalTok{loss)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 10'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-9-1.pdf} *
+Evolution for the best solution in case \(K = 20\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.loss.seq.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{loss=}\NormalTok{results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq,}\DataTypeTok{iter=}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{length}\NormalTok{(results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq)))}
+\KeywordTok{ggplot}\NormalTok{(best.loss.seq.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{iter,}\DataTypeTok{y=}\NormalTok{loss)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 20'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  The distribution of terminal loss function values are given by
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Case \(K = 5\)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{terminal.losses.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{terminal.losses=}\NormalTok{results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{terminal.losses)}
+\KeywordTok{ggplot}\NormalTok{(terminal.losses.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{terminal.losses)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 5'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-11-1.pdf} * Case
+\(K = 10\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{terminal.losses.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{terminal.losses=}\NormalTok{results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{terminal.losses)}
+\KeywordTok{ggplot}\NormalTok{(terminal.losses.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{terminal.losses)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 10'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-12-1.pdf} * Case
+\(K = 20\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{terminal.losses.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{terminal.losses=}\NormalTok{results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{terminal.losses)}
+\KeywordTok{ggplot}\NormalTok{(terminal.losses.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{terminal.losses)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 20'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Plot best terminal losses with a set of different \(K\) values, we
+  show the curve will look like an elbow. Picking the \(K\) value around
+  the elbow point is appropriate.
+\end{enumerate}
+
+\subsubsection{Bonus for an extra 20
+points:}\label{bonus-for-an-extra-20-points-1}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  For K-medoids method, we only need to modify function
+  \(\textrm{single.centroid}\).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# get_prototype function is a substitute to function single.centroid}
+\NormalTok{get_prototype <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(ric, all.digits)\{}
+\NormalTok{  digits.in.cluster <-}\StringTok{ }\NormalTok{all.digits[ric}\OperatorTok{==}\DecValTok{1}\NormalTok{,]}
+\NormalTok{  smallest.dist <-}\StringTok{ }\OtherTok{Inf}
+\NormalTok{  closest.digit <-}\StringTok{ }\NormalTok{digits.in.cluster[}\DecValTok{1}\NormalTok{,]}
+  \ControlFlowTok{if}\NormalTok{ (}\KeywordTok{nrow}\NormalTok{(digits.in.cluster) }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+    \KeywordTok{return}\NormalTok{(all.digits[}\KeywordTok{sample}\NormalTok{(}\KeywordTok{nrow}\NormalTok{(all.digits),}\DecValTok{1}\NormalTok{), ])}
+\NormalTok{  \}}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{nrow}\NormalTok{(digits.in.cluster)))\{}
+\NormalTok{    digit <-}\StringTok{ }\NormalTok{digits.in.cluster[i, ]}
+\NormalTok{    dist.to.others <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{getDist}\NormalTok{(digit,digits.in.cluster))}
+    \ControlFlowTok{if}\NormalTok{ (dist.to.others }\OperatorTok{<}\StringTok{ }\NormalTok{smallest.dist)\{}
+\NormalTok{      closest.digit <-}\StringTok{ }\NormalTok{digit}
+\NormalTok{      smallest.dist <-}\StringTok{ }\NormalTok{dist.to.others}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \KeywordTok{return}\NormalTok{(closest.digit)}
+\NormalTok{\}}
+\CommentTok{# define function my_kmedoids}
+\NormalTok{my_kmedoids <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(all.digits, K, N)\{}
+  \KeywordTok{set.seed}\NormalTok{(}\DecValTok{26}\NormalTok{)}
+\NormalTok{  best.cluster.parameters <-}\StringTok{ }\OtherTok{NULL} \CommentTok{# centroids}
+\NormalTok{  best.cluster.assignments <-}\StringTok{ }\OtherTok{NULL} \CommentTok{# ric}
+\NormalTok{  best.loss.seq <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\NormalTok{  terminal.losses <-}\StringTok{ }\KeywordTok{c}\NormalTok{()}
+\NormalTok{  best.terminal.loss <-}\StringTok{ }\OtherTok{Inf}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,N))\{}
+\NormalTok{    centroids <-}\StringTok{ }\NormalTok{all.digits[}\KeywordTok{sample}\NormalTok{(}\KeywordTok{nrow}\NormalTok{(all.digits),K), ]}
+\NormalTok{    dists <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(all.digits,}\DecValTok{1}\NormalTok{,getDist,}\DataTypeTok{centroids=}\NormalTok{centroids)}
+\NormalTok{    dists <-}\StringTok{ }\KeywordTok{t}\NormalTok{(dists)}
+\NormalTok{    loss <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{apply}\NormalTok{(dists, }\DecValTok{1}\NormalTok{, min))}
+\NormalTok{    last.loss <-}\StringTok{ }\NormalTok{loss }\OperatorTok{+}\StringTok{ }\DecValTok{1}
+\NormalTok{    loss.seq <-}\StringTok{ }\KeywordTok{c}\NormalTok{(loss)}
+    \ControlFlowTok{while}\NormalTok{ (}\KeywordTok{abs}\NormalTok{(last.loss }\OperatorTok{-}\StringTok{ }\NormalTok{loss) }\OperatorTok{>=}\StringTok{ }\FloatTok{1e-4}\NormalTok{) \{}
+\NormalTok{      rics <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(dists,}\DecValTok{1}\NormalTok{,}\ControlFlowTok{function}\NormalTok{(d) }\KeywordTok{ifelse}\NormalTok{(d}\OperatorTok{==}\KeywordTok{min}\NormalTok{(d),}\DecValTok{1}\NormalTok{,}\DecValTok{0}\NormalTok{))}
+\NormalTok{      rics <-}\StringTok{ }\KeywordTok{t}\NormalTok{(rics)}
+\NormalTok{      centroids <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(rics, }\DecValTok{2}\NormalTok{, get_prototype, }\DataTypeTok{all.digits=}\NormalTok{all.digits)}
+\NormalTok{      dists <-}\StringTok{ }\KeywordTok{apply}\NormalTok{(all.digits, }\DecValTok{1}\NormalTok{, getDist, }\DataTypeTok{centroids=}\KeywordTok{t}\NormalTok{(centroids))}
+\NormalTok{      dists <-}\StringTok{ }\KeywordTok{t}\NormalTok{(dists)}
+\NormalTok{      last.loss <-}\StringTok{ }\NormalTok{loss}
+\NormalTok{      loss <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(}\KeywordTok{apply}\NormalTok{(dists, }\DecValTok{1}\NormalTok{, min))}
+\NormalTok{      loss.seq <-}\StringTok{ }\KeywordTok{c}\NormalTok{(loss.seq,loss)}
+\NormalTok{    \}}
+\NormalTok{    terminal.losses <-}\StringTok{ }\KeywordTok{c}\NormalTok{(terminal.losses,loss)}
+    \ControlFlowTok{if}\NormalTok{ (best.terminal.loss }\OperatorTok{>}\StringTok{ }\NormalTok{loss)\{}
+\NormalTok{      best.terminal.loss <-}\StringTok{ }\NormalTok{loss}
+\NormalTok{      best.loss.seq <-}\StringTok{ }\NormalTok{loss.seq}
+\NormalTok{      best.cluster.assignments <-}\StringTok{ }\NormalTok{rics}
+\NormalTok{      best.cluster.parameters <-}\StringTok{ }\KeywordTok{t}\NormalTok{(centroids)}
+\NormalTok{    \}}
+\NormalTok{  \}}
+  \KeywordTok{return}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{best.cluster.parameters=}\NormalTok{best.cluster.parameters, }\DataTypeTok{best.cluster.assignments=}\NormalTok{best.cluster.assignments, }\DataTypeTok{best.loss.seq=}\NormalTok{best.loss.seq, }\DataTypeTok{terminal.losses=}\NormalTok{terminal.losses))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\tightlist
+\item
+  Let us take \(N = 10\) and first \(100\) digits. The cluster
+  prototypes are clearer than those obtained from K-means method. The
+  loss function values are relatively higher than K-means method.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{digits.smaller <-}\StringTok{ }\NormalTok{digits[}\DecValTok{1}\OperatorTok{:}\DecValTok{100}\NormalTok{, ]}
+\NormalTok{K <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{20}\NormalTok{)}
+\NormalTok{N <-}\StringTok{ }\DecValTok{10}
+\NormalTok{results <-}\StringTok{ }\KeywordTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (k }\ControlFlowTok{in}\NormalTok{ K)\{}
+\NormalTok{  results <-}\StringTok{ }\KeywordTok{append}\NormalTok{(results, }\KeywordTok{list}\NormalTok{(}\KeywordTok{my_kmedoids}\NormalTok{(digits,k,N)))}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  Case \(K = 5\)
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (id }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{5}\NormalTok{))\{}
+  \KeywordTok{show_digit}\NormalTok{(results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.cluster.parameters[id,])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-16-1.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-16-2.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-16-3.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-16-4.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-16-5.pdf} * Case
+\(K = 10\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (id }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{10}\NormalTok{))\{}
+  \KeywordTok{show_digit}\NormalTok{(results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.cluster.parameters[id,])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-1.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-2.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-3.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-4.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-5.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-6.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-7.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-8.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-9.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-17-10.pdf} * Case
+\(K = 20\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ (id }\ControlFlowTok{in} \KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{20}\NormalTok{))\{}
+  \KeywordTok{show_digit}\NormalTok{(results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.cluster.parameters[id,])}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-1.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-2.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-3.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-4.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-5.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-6.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-7.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-8.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-9.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-10.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-11.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-12.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-13.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-14.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-15.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-16.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-17.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-18.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-19.pdf}
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-18-20.pdf} *
+Evolution for the best solution in case \(K = 5\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.loss.seq.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{loss=}\NormalTok{results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq,}\DataTypeTok{iter=}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{length}\NormalTok{(results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq)))}
+\KeywordTok{ggplot}\NormalTok{(best.loss.seq.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{iter,}\DataTypeTok{y=}\NormalTok{loss)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 5'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-19-1.pdf} *
+Evolution for the best solution in case \(K = 10\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.loss.seq.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{loss=}\NormalTok{results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq,}\DataTypeTok{iter=}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{length}\NormalTok{(results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq)))}
+\KeywordTok{ggplot}\NormalTok{(best.loss.seq.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{iter,}\DataTypeTok{y=}\NormalTok{loss)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 10'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-20-1.pdf} *
+Evolution for the best solution in case \(K = 20\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{best.loss.seq.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{loss=}\NormalTok{results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq,}\DataTypeTok{iter=}\KeywordTok{seq}\NormalTok{(}\DecValTok{1}\NormalTok{,}\KeywordTok{length}\NormalTok{(results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{best.loss.seq)))}
+\KeywordTok{ggplot}\NormalTok{(best.loss.seq.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{iter,}\DataTypeTok{y=}\NormalTok{loss)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 20'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-21-1.pdf} *
+distribution of terminal loss function values in case \(K = 5\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{terminal.losses.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{terminal.losses=}\NormalTok{results[[}\DecValTok{1}\NormalTok{]]}\OperatorTok{$}\NormalTok{terminal.losses)}
+\KeywordTok{ggplot}\NormalTok{(terminal.losses.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{terminal.losses)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 5'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-22-1.pdf} *
+distribution of terminal loss function values in case \(K = 10\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{terminal.losses.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{terminal.losses=}\NormalTok{results[[}\DecValTok{2}\NormalTok{]]}\OperatorTok{$}\NormalTok{terminal.losses)}
+\KeywordTok{ggplot}\NormalTok{(terminal.losses.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{terminal.losses)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 10'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-23-1.pdf} *
+distribution of terminal loss function values in case \(K = 20\)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{terminal.losses.df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{terminal.losses=}\NormalTok{results[[}\DecValTok{3}\NormalTok{]]}\OperatorTok{$}\NormalTok{terminal.losses)}
+\KeywordTok{ggplot}\NormalTok{(terminal.losses.df,}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{terminal.losses)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\DataTypeTok{label =} \StringTok{'K = 20'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{HW3_files/figure-latex/unnamed-chunk-24-1.pdf}
+
+\section{2. Problem 2: Finite-state Hidden Markov models
+(HMMs)}\label{problem-2-finite-state-hidden-markov-models-hmms}
+
+(Continued from the problem on Markov chains from the previous
+homework.)
+
+Suppose now that we do not observe the state \(S_t\) of the Markov
+chain. Instead, at time \(t\) we observe \(Y_t\). \(Y_t\) can be
+anything: integers, reals, vectors, images. The only condition is that
+the probability distribution of \(Y_t\) depends only on \(S_t\) (and not
+\(\text{e.g.}\) on \(S_{t-1}\)). Write this as \(P_Y (Y_t|S_t)\), with
+\(P_Y (\cdot |S_t = i)\) giving the probability (or probability density)
+of \(Y_t\) given \(S_t = i\) (for simplicity, we let this same
+probability hold for all \(t\)). Also write
+\(\mathbf{Y} = (Y_1, . . . Y_T )\).
+
+Our HMM model defines a probability distribution over
+\((\mathbf{S}, \mathbf{Y})\).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Write down
+  \(P(S_1 = s_1, S_2 = s_2, \dots, S_T = s_T , Y_1 = y_1, \dots, Y_T = y_t)\)
+  in terms of \(\pi^1\), \(A\) and \(P_Y\).
+\end{enumerate}
+
+For the earlier `Markov chain' problem, we could quite efficiently
+calculate \(\pi_i^t = P(S_t = i)\), the marginal prior probability of
+\(S_t\). We will now calculate the marginal posterior probabilities
+\(P(S_t = i|\mathbf{Y})\). Look at the scanned notes for the Kalman
+filter for reference.
+
+From now onwards, we will fix the values of \(\mathbf{Y}\), since these
+are our observations. Then define an \(N \times 1\) vector \(B^t\), with
+\(B^t_i = P(Y_t = y_t|S_t = i)\).
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Is this a \(probability\) vector (i.e.~is it a nonnegative, adding up
+  to 1)?
+\end{enumerate}
+
+Define \(\alpha\) and \(\beta\) messages:
+\[\alpha_i^t := P(S_t = i, Y_1 = y_1, \dots, Y_t = y_t) = P(S_t = i, \mathbf{Y}_{1:t})\]
+\[\beta_i^t := P(Y_{t+1} = y_{t+1}, \dots, Y_T = y_T | S_t = i) = P(\mathbf{Y}_{t+1:T} | S_t = i)\]
+Above \(:=\) means `which we define to be equal to', or `which we will
+call'.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\item
+  \(\alpha^t\) and \(\beta^t\) are both \(N \times 1\) vectors. Are
+  these vectors \(probability\) vectors?
+\item
+  Write \(P(S_t = i | \mathbf{Y})\) in terms of \(\alpha^t\) and
+  \(\beta^t\). Include the normalization term (i.e summation of both
+  sides over \(i\) must give 1). In the scanned notes (e.g.~top
+  paragraph of page 2), we ignore the normalization constant, but we can
+  easily calculate it since we know that probabilities must sum or
+  integrate to 1. Use matrix (or vector) notation. You might have to use
+  a transpose (e.g. \((\alpha^t)^T\)). Also, define \(\mathbf{1}\) as an
+  \(N \times 1\) vector of ones, and note that
+  \(\sum_{i=1}^N a_i^t = \mathbf{1}^Ta^t\). Hint: First write it
+  explicitly with summations (compare with the Kalman filter).
+\item
+  Write \(P(S_t = i, S_{t+1} = j|\mathbf{Y})\) in terms of \(\alpha^t\),
+  \(\beta^t\), \(A\) and \(B\). Include the normalization term and use
+  matrix (or vector) notation.
+\item
+  Write \(\alpha^t\) as a function of \(\alpha^{t-1}\), \(A\) and \(B\).
+  Use matrix notation. An operation you'll need here is the element-wise
+  product of two vectors. In R this is easy, just write \(V_1 \ast V_2\)
+  for two vectors \(V_1\) and \(V_2\). In matrix notation, the simplest
+  way to write this is as \(diag(V_2) \cdot V_1\), where \(diag(V_2)\)
+  is an \(N \times N\) matrix whose diagonal is \(V_2\) and whose other
+  elements are 0. Verify that \(diag(V_2) \cdot V_1\) is a vector whose
+  \(i\)th element is the product of the \(i\)th elements of \(V_1\) and
+  \(V_2\).
+\item
+  Write \(\beta^t\) as a function of \(\beta^{t+1}\), \(A\) and \(B\).
+  Use matrix notation.
+\item
+  How will you calculate the first \(\alpha\) and \(\beta\) at the
+  beginning of the forward and backward pass?
+\item
+  Hopefully, you can now see a dynamic programming algorithm that
+  sequentially calculates the \(\alpha^{t\prime}\)s, and then the
+  \(\beta^{t\prime}\)s. These can then be combined to calculate
+  \(P(S_t|\mathbf{Y})\) for any \(t\). The overall algorithm is called
+  the Baum-Welch algorithm. Write down the cost in terms of \(T\) and
+  \(N\).
+\item
+  Imagine instead we wanted to calculate the most like sequence of
+  states (rather than the marginal probabilities). One approach is to
+  set \(S_t = \arg \max P(S_t|\mathbf{Y})\) for all \(t\). Why is this a
+  bad idea?
+\end{enumerate}
+
+\textbf{Solution:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  The joint probability is given by \[\begin{align}
+  P(S_1 = s_1, \dots, S_T = s_T , Y_1 = y_1, \dots, Y_T = y_t) & = P(Y_1 = y_1,\dots,Y_T = y_T|S_1=s_1,\dots,S_T=s_T)P(S_1 = s_1,\dots,S_T=s_T) \\
+  & = \prod_{t=1}^T P_Y(Y_t=y_t|S_t=s_t) \cdot P(S_1 = s_1,\dots,S_T=s_T) \\
+  & = \prod_{t=1}^T P_Y(Y_t=y_t|S_t=s_t) \cdot P(S_1=s_1)\cdot \prod_{i=2}^T P(S_i=s_i|S_{i-1}=s_{i-1}) \\
+  & = \prod_{t=1}^T P_Y(Y_t=y_t|S_t=s_t) \cdot \pi^1_{s_1}\cdot \prod_{i=2}^T A_{s_{i-1},s_i}
+  \end{align}\]
+\item
+  No, \(B^t\) is not a probability vector.
+\item
+  \(\alpha^t\) is not a probability vector since
+  \(\sum_{i} \alpha_i^t = P(\mathbf{Y}_{1:t})\). \(\beta^t\) is not a
+  probability vector.
+\item
+  The probability is given by \[\begin{align}
+  P(S_t = i | \mathbf{Y}) & = \frac{P(S_t=i,\mathbf{Y})}{P(\mathbf{Y})} \\
+  & = \frac{P(S_t = i,\mathbf{Y}_{1:t})P(\mathbf{Y}_{t+1:T}|S_t=i)}{(\alpha^t)^\top\beta^t} \\
+  & = \frac{\alpha^t_i\beta^t_i}{(\alpha^t)^\top\beta^t}
+  \end{align}\]
+\item
+  The probability is given by \[\begin{align}
+  P(S_t = i, S_{t+1} = j | \mathbf{Y}) & = \frac{P(S_t = i, S_{t+1} = j, \mathbf{Y})}{P(\mathbf{Y})} \\
+  & = \frac{P(S_t=i,\mathbf{Y}_{1:t})P(S_{t+1}=j,\mathbf{Y}_{t+1:T}|S_t=i,\mathbf{Y}_{1:t})}{(\alpha^t)^\top\beta^t} \\
+  & = \frac{\alpha^t_i P(\mathbf{Y}_{t+1:T}|S_t=i,S_{t+1}=j,\mathbf{Y}_{1:t})P(S_{t+1}=j|S_t=i,\mathbf{Y}_{1:t})}{(\alpha^t)^\top\beta^t} \\
+  & = \frac{\alpha^t_i P(\mathbf{Y}_{t+2:T}|S_t=i,S_{t+1}=j,\mathbf{Y}_{1:t+1})P(Y_{t+1} = y_{t+1}|S_t = i, S_{t+1}=j,\mathbf{Y}_{1:t})P(S_{t+1}=j|S_t=i)}{(\alpha^t)^\top\beta^t} \\
+  & = \frac{\alpha^t_i P(\mathbf{Y}_{t+2:T}|S_{t+1}=j)P(Y_{t+1} = y_{t+1}| S_{t+1}=j)P(S_{t+1}=j|S_t=i)}{(\alpha^t)^\top\beta^t} \\
+  & = \frac{\alpha^t_i \beta^{t+1}_jB^{t+1}_jA_{ij}}{(\alpha^t)^\top\beta^t}
+  \end{align}\]
+\end{enumerate}
+
+Dividing \(\alpha^t\) and \(\beta^t\) by their length to get the
+normalized forward and backward messaging vectors, i.e.,
+\[\tilde{\alpha^t_i} = \frac{\alpha^t_i}{\mathbf{1}^\top\alpha^t}, \quad \tilde{\beta^t_i} = \frac{\beta^t_i}{\mathbf{1}^\top\beta^t}\]
+Replacing \(\alpha^t_i\) and \(\beta^t_i\) with their normalized
+versions in \(P(S_t = i, S_{t+1} = j | \mathbf{Y})\) can render the
+results of this question.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  The relational formaula is derived as follows \[\begin{align}
+  \alpha^t_i & = P(S_t=i,\mathbf{Y}_{1:t}) \\
+  & = \sum_j P(S_t = i, S_{t-1} = j, \mathbf{Y}_{1:t}) \\
+  & = \sum_j P(S_{t-1} = j, \mathbf{Y}_{1:t-1})P(S_t = i, Y_t = y_t | S_{t-1} = j, \mathbf{Y}_{1:t-1}) \\
+  & = \sum_j \alpha^{t-1}_j P(Y_t = y_t | S_t = i, S_{t-1} = j, \mathbf{Y}_{1:t-1})P(S_t=i | S_{t-1} = j, \mathbf{Y}_{1:t-1}) \\
+  & = \sum_j \alpha^{t-1}_j P(Y_t = y_t | S_t = i)P(S_t=i | S_{t-1} = j) \\
+  & = \sum_j \alpha^{t-1}_j B^t_i A_{ji}
+  \end{align}\]
+\end{enumerate}
+
+The matrix form is given by
+\[\alpha^t = diag(B^t)\left(A^\top \alpha^{t-1}\right)\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  The relational formula is derived as follows \[\begin{align}
+  \beta^t_i & = P(\mathbf{Y}_{t+1:T}|S_t = i) \\
+  & = \sum_j P(S_{t+1}=j,\mathbf{Y}_{t+1:T}|S_t = i) \\
+  & = \sum_j P(S_{t+1}=j|S_t = i) P(\mathbf{Y}_{t+1:T} | S_t=i, S_{t+1} = j) \\
+  & = \sum_j P(S_{t+1}=j|S_t = i) P(\mathbf{Y}_{t+2:T} | Y_{t+1} = y_{t+1}, S_t=i, S_{t+1} = j) P(Y_{t+1} = y_{t+1}| S_t=i, S_{t+1} = j) \\
+  & = \sum_j P(S_{t+1}=j|S_t = i) P(\mathbf{Y}_{t+2:T} | S_{t+1} = j) P(Y_{t+1} = y_{t+1}| S_{t+1} = j) \\
+  & = \sum_j A_{ij} \beta^{t+1}_j B^{t+1}_j
+  \end{align}\]
+\end{enumerate}
+
+Therefore, the matrix form is given by
+\[\beta^t = A\left(diag(B^{t+1})\beta^{t+1}\right)\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\item
+  The initial values are given by
+  \[\alpha^1_i = P(Y_1=y_1|S_1=i)P(S_1=i) = B^1_i\pi^1_i\]
+  \[\beta^T_i = 1\]
+\item
+  The cost of Baum-Welch algorithm is \(2(N+N^2)T + 2 + N = O(TN^2)\).
+\item
+  It is a bad idea since the complexity is \(O(T^3(D+d)^3)\). If the
+  size of observations is large, the time is consumption is huge and the
+  system will crack down.
+\end{enumerate}
+
+
+\end{document}

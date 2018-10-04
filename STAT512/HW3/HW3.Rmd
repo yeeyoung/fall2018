@@ -47,7 +47,7 @@ summary(concentration.mod)
 |Error   |         $13$      |   $2.9247$     |    $0.225$  |         |
 |Lack of fit|      $3$       |   $2.7673$     |    $0.9224$ | $58.603$|
 |Pure error |      $10$      |   $0.1574$     |    $0.01574$|         |
-|Corrected Total|  $14$      |   $815.5218$   |             |         |
+|Corrected Total|  $14$      |   $15.5218$   |             |         |
   
 ```{r, warning=FALSE}
 # Reduced model
