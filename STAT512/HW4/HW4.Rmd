@@ -3,8 +3,8 @@ title: "STAT512 Division 1 HW 4"
 author: "Yi Yang"
 date: "10/13/2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -217,9 +217,87 @@ b) Whether $X_2$ and $X_3$ can be dropped from the regression model given that $
 
 c) Compute $R^2_{Y3|1,2,4}$.
 
+**Solution:**
 
+a) The test hypothesis is given by
+$$H_0: \beta_3 = 0,\quad H_a: \beta_3 \neq 0$$
+The test statistic is given by 
+$$F^\ast = \frac{MSR(X_3|X_1,X_2,X_4)}{MSE(X_1,X_2,X_3,X_4)} = \frac{0.420}{1.293} = 0.325$$
+The critical value is $qf(0.99,1,76) = 6.980578$, which is greater than $F^\ast$. Therefore, the null hypothesis can not be rejected. $X_3$ can be dropped from the regression model.
+```{r, warning=FALSE}
+qf(0.99,1,76)
+```
 
+b) The test hypothesis is given by
+$$H_0: \beta_2 = \beta_3 = 0, \quad H_a: \text{not all } \beta_2, \beta_3 \text{ equal to zero}$$
+The test statistic is given by
+$$F^\ast = \frac{MSR(X_2,X_3|X_1,X_4)}{MSE(X_1,X_2,X_3,X_4)} = \frac{(0.420+27.857)/2}{1.293} = 10.935$$
+The critical value is given by $qf(0.99,2,76) = 4.89584$, which is less than the test statistic. The null hypothesis can be rejected, which means not all $\beta_2$ and $\beta_3$ equal to zero.
+```{r, warning=FALSE}
+qf(0.99,2,76)
+```
 
+c) The coefficient of partial determination is given by 
+$$R^2_{Y3|1,2,4} = \frac{SSR(X_3|X_1,X_2,X_4)}{SSE(X_1,X_2,X_4)} = \frac{0.420}{98.231+0.420} = 0.004257$$
+
+5. In a study of insurance industry, an economist wished to related the speed with which a particular insurance innovation is adopted ($Y$) to the size of the insurance firm ($X_1$) and the type of firm ($X_2$, stock company and mutual company). Data is in insurance.csv
+$$X_2 = \left\{
+\begin{array}{ll}
+0\quad \text{if mutual company} \\
+1\quad \text{if stock company}
+\end{array}
+\right.$$
+Perform hypothesis test for the following question. Use a significant level of $0.1$. Define $H_0$ and $H_a$, test statistic, critical value, and state conclusion.
+
+a) The mutual firm and the stock firm have the same average adopt time for any firm size.
+
+b) The firm size ($X_1$) has the same impact on the adopt time in mutual firm and stock firm.
+
+c) The firm size ($X_1$) has no impact on the adopt time in mutual firm and stock firm.
+
+d) If the firm size ($X_1$) has the same impact on the two insurance company (i.e., $\beta_3 = 0$), the average adoption time for the stock firm, at any given firm size, is also the same as the mutual firm.
+
+**Solution:**
+
+a) For a mutual company, the average adopt time is given by $Y = \beta_0 + \beta_1X_1$. For a stock company, the average adopt time is given by $Y = \beta_0 +\beta_2 + (\beta_1 + \beta_3)X_1$. The hypothesis test for this subproblem is given by
+$$H_0: \beta_2 = \beta_3 = 0,\quad H_a: \text{not all }\beta_2, \beta_3 = 0$$
+```{r, warning=FALSE}
+insurance <- read.csv('data/insurance.csv',header = TRUE)
+Y <- insurance$X17
+X1 <- insurance$X151
+X2 <- insurance$X0
+insurance.mod <- lm(Y~X1+X2+X1*X2,insurance)
+summary(insurance.mod)
+anova(insurance.mod)
+```
+The test statistic is given by $F^\ast = MSR(X_2,X_3|X_1)/MSE = 289.02/2/11.59=12.4685$, the critical value is $qf(0.9,2,15) = 2.695173$, which is less than the test statistic. Therefore, the null hypothesis can be rejected, the mutual firm and the stock firm do not have the same average adopt time for any firm size.
+```{r, warning=FALSE}
+qf(0.9,2,15)
+```
+
+b) The test hypothesis is given by
+$$H_0: \beta_3 = 0,\quad H_a: \beta_3 \neq 0$$
+The test statistic is given by $F^\ast = MSR(X_3|X_1,X_2)/MSE = 0$, the critical value is given by $qf(0.9,1,15) = 3.073186$, which is greater than test statistic. The null hypothesis can not be rejected, the firm size has the same impact on the adoption time in both type firms.
+```{r, warning=FALSE}
+qf(0.9,1,15)
+```
+
+c) The test hypothesis is given by
+$$H_0: \beta_1 = \beta_3 = 0,\quad H_a: \text{not all } \beta_1, \beta_3 = 0$$
+Test statistic is given by $F^\ast = MSR(X_1,X_3|X_2)/MSE = 1361.06/2/11.59 = 58.717$, the critical value is $2.695173$, which is less than the test statistic. Therefore, the null hypothesis can be rejected. The firm size can not have no impact on the adopt time in mutual firm and stock firm.
+
+```{r,warning=FALSE}
+anova(lm(Y~X2+X1+X1*X2,insurance))
+```
+
+d) Since $\beta_3 = 0$, the new ANOVA table is given by
+```{r, warning=FALSE}
+anova(lm(Y~X1+X2, insurance))
+qf(0.9,1,16)
+```
+The test hypothesis is given by
+$$H_0: \beta_2 = 0,\quad H_a: \beta_2 \neq 0$$
+The test statistic is given by $F^\ast = MSR(X_2|X_1)/MSE = 289.02/10.87 = 26.589$, the critical value is given by $qf(0.9,1,16) = 3.04811$, which is less than the test statistic. Therefore, the null hypothesis can be rejected, the average adoption time for the stock firm can not be the same as the mutual firm at any given firm size.
 
 
 
