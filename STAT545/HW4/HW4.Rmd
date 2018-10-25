@@ -3,8 +3,8 @@ title: "STAT545 HW4"
 author: "Yi Yang"
 date: "10/3/2018"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -108,6 +108,192 @@ We will model these binary images as a mixture of $K$ Bernoulli vectors. Thus, w
 8. Run the EM algorithm on the binary digits data set for $K = 2$ and $3$. Plot the cluster parameters using $\mathrm{show\_digit}$. Also plot the trace of the evolution of $\mathcal{F}$. Write down the final value of $\pi$ and $\mathcal{F}$. What are the units of the latter?
 
 9. The entropy of a distribution is a measure of how 'random' it is. For $K = 2$, calculate the entropy of the final $q(c_i|x_i,\overrightarrow{\mu},\pi)$ of each digit, and plot the digit with the largest entropy. This is the digit with largest ambiguity about its correct cluster.
+
+**Solution:**
+
+1. 
+```{r, warning=FALSE}
+# Credit to https://gist.github.com/brendano/39760
+# Load the MNIST digit recognition dataset into R
+
+load_image_file <- function(filename) {
+  ret = list()
+  f = file(filename,'rb')
+  readBin(f,'integer',n=1,size=4,endian='big')
+  ret$n = readBin(f,'integer',n=1,size=4,endian='big')
+  nrow = readBin(f,'integer',n=1,size=4,endian='big')
+  ncol = readBin(f,'integer',n=1,size=4,endian='big')
+  x = readBin(f,'integer',n=ret$n*nrow*ncol,size=1,signed=F)
+  ret$x = matrix(x, ncol=nrow*ncol, byrow=T)
+  close(f)
+  ret
+}
+load_label_file <- function(filename) {
+  f = file(filename,'rb')
+  readBin(f,'integer',n=1,size=4,endian='big')
+  n = readBin(f,'integer',n=1,size=4,endian='big')
+  y = readBin(f,'integer',n=n,size=1,signed=F)
+  close(f)
+  y
+}
+ 
+show_digit <- function(arr784, col=gray(12:1/12), ...) {
+  image(matrix(arr784, nrow=28)[,28:1], col=col,axes=F, ...)
+}
+
+# load the first 1000 digits and their labels
+digits.list <- load_image_file('../HW3/data/train-images-idx3-ubyte')
+digits <- digits.list$x[1:1000,]
+#digits <- digits / 255.0 # normalize pixels
+digits <- ifelse(digits<4, 0, 1)
+labels <- load_label_file('../HW3/data/train-labels-idx1-ubyte')
+dim(digits)
+show_digit(digits[1,])
+```
+
+2. The joint probability is given by 
+$$p(X,C|\pi,\overrightarrow{\mu}) = \prod_{n=1}^N\prod_{k=1}^K\left[\pi_k\prod_{d=1}^D \left(\mu^k_d\right)^{x_{nd}}\left(1 - \mu^k_d\right)^{1-x_{nd}}\right]^{\delta(c_n = k)}$$
+$$\log p(X,C|\pi,\overrightarrow{\mu}) = \sum_{n=1}^N\sum_{k=1}^K\delta(c_n = k)\left\{\log\pi_k + \sum_{d=1}^D\left[x_{nd}\log\mu^k_d + (1 - x_{nd})\log(1-\mu^k_d)\right]\right\}$$
+
+3. Consider this constrained optimization problem, introduce the Lagrange multiplier $\lambda$, we have:
+$$\arg \max \log p(X,C|\pi,\overrightarrow{\mu}) + \lambda(\sum_{k=1}^K \pi_k - 1)$$
+Taking derivative to $\pi_k$, we have
+$$\frac{\sum_{n=1}^N \delta(c_n = k)}{\pi_k} + \lambda = 0$$
+Multiply both sides by $\pi_k$ and sum over $k = 1,\dots, K$, we have
+$$\lambda = -\sum_{k=1}^K\sum_{n=1}^N \delta(c_n = k) = -N$$
+Therefore, we have
+$$\pi_k = \frac{\sum_{n=1}^N \delta(c_n = k)}{N}$$
+Taking derivative to $\mu^k_d$, we have
+$$\sum_{n=1}^N \delta(c_n = k)\left[\frac{x_{nd}}{\mu^k_d} - \frac{1-x_{nd}}{1 - \mu^k_d}\right] = 0$$
+Therefore, we have
+$$\mu^k_d = \frac{\sum_{n=1}^N x_{nd}\delta(c_n=k)}{\sum_{n=1}^N\delta(c_n=k)}$$
+
+4. Each observation is independent to each other. The joint posterior probability is the product of the marginal posterior probability.
+$$q_{n,k} = p(c_n = k|x_n, \pi,\overrightarrow{\mu}) = \frac{\pi_kp(x_n|\mu^k)}{\sum_{j=1}^K \pi_jp(x_n|\mu^j)}$$
+
+5. The variational lower bound is given by
+$$\begin{aligned}
+F(q,\pi,\overrightarrow{\mu}) & = \mathop{\mathbb{E}_q}[\log p(X,C|\pi,\overrightarrow{\mu})] + H(q)\\
+& = \sum_{n=1}^N\sum_{k=1}^K q_{n,k}\left\{\log\pi_k + \sum_{d=1}^D\left[x_{nd}\log\mu^k_d + (1 - x_{nd})\log(1-\mu^k_d)\right]\right\} - \sum_{n=1}^N\sum_{k=1}^K q_{n,k}\log q_{n,k}
+\end{aligned}$$
+
+6. Analagous to part 3, the estimated parameters should be, given $N_k = \sum_{n=1}^N q_{n,k}$
+$$\pi_k = \frac{N_k}{N}$$
+$$\mu^k_d = \frac{\sum_{n=1}^N x_{nd}\cdot q_{n,k}}{N_k}$$
+
+7. The algorithm is implemented as follows
+```{r, warning=FALSE}
+em <- function(Obs, K){
+  # slog ignore zero logrithm
+  slog <- function(val){
+    pos <- val > 0
+    val[pos] <- log(val[pos])
+    return(val)
+  }
+  set.seed(12)
+  # obtain sizes 
+  N <- nrow(Obs)
+  D <- ncol(Obs)
+  Pi <- runif(K,0,1)
+  Pi <- Pi / sum(Pi)
+  mu <- matrix(runif(D*K,0,1),nrow = D)
+  q <- matrix(rep(0,N*K), nrow = N)
+  temp <- rep(0,K)
+  
+  Tol <- 1e-2
+  Change <- Tol + 1
+  maxIter <- 100
+  it <- 0
+  Fvalue <- c()
+  while (it <= maxIter && Tol <= Change) {
+    # E step
+    for (n in seq(1,N)){
+      x <- Obs[n,]
+      for (k in seq(1,K)){
+        temp[k] = slog(Pi[k]) + sum(x*slog(mu[,k])) + sum((1 - x)*slog(1 - mu[,k]))
+      }
+      temp <- temp - max(temp)
+      q[n,] <- exp(temp)/sum(exp(temp))
+    }
+    
+    # M step
+    Nk <- colSums(q)
+    Pi <- Nk/N
+    
+    mu_update <- matrix(rep(0,D*K), nrow = D)
+    for (kk in seq(1,K)){
+      mu_update[,kk] <- colSums(q[,kk]*Obs)/Nk[kk]
+    }
+    Change <- max(abs(mu - mu_update))
+    mu <- mu_update
+    it <- it + 1
+    
+    # update F value 
+    fvalue <- 0
+    for (n in seq(1,N)){
+      x <- Obs[n,]
+      for (k in seq(1,K)){
+        temp[k] = slog(Pi[k]) + sum(x*slog(mu[,k])) + sum((1 - x)*slog(1 - mu[,k]))
+        fvalue <- fvalue + q[n,k]*temp[k] - q[n,k]*slog(q[n,k])
+      }
+    }
+    Fvalue <- c(Fvalue, fvalue)
+  }
+  
+  return(list(Pi=Pi,mu=mu,q=q,Fvalue=Fvalue,it=it))
+}
+```
+
+
+8. 
+```{r, warning=FALSE}
+#K = 2
+examp <- em(digits,2)
+for (id in seq(1,ncol(examp$mu))){
+  show_digit(examp$mu[,id])
+}
+
+plot(seq(1,examp$it),examp$Fvalue)
+cat(paste('Final value of pi and F:\n'))
+print(examp$Pi)
+print(examp$Fvalue[examp$it])
+```
+```{r, warning=FALSE}
+#K = 3
+examp <- em(digits,3)
+for (id in seq(1,ncol(examp$mu))){
+  show_digit(examp$mu[,id])
+}
+
+plot(seq(1,examp$it),examp$Fvalue)
+cat(paste('Final value of pi and F:\n'))
+print(examp$Pi)
+print(examp$Fvalue[examp$it])
+```
+The units of F is the same as the entropy, which is J/K.
+
+9. 
+```{r, warning=FALSE}
+#examp <- em(digits,2)
+#Q <- examp$q
+#dim(Q)
+#Entropy1 <- apply(Q,1,function(x) sum(-x*log(x)))
+#Entropy <- rep(0,length(Entropy1))
+#Entropy[Entropy1>0] <- Entropy1[Entropy1>0]
+#show_digit(digits[which(Entropy==max(Entropy)),])
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

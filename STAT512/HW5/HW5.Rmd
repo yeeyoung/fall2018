@@ -1,0 +1,24 @@
+---
+title: "STAT512 Division 1 HW 5"
+author: "Yi Yang"
+date: "10/22/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. In a regression analysis of on-the-job head injuries of warehouse laborers caused by falling objects, $Y$ is a measure of severity of the injury, $X_1$ is an index reflecting both the weight of the object and the distance it fell, and $X_2$ and $X_3$ are indicator variables for nature of head protection worn at the time of the accident, coded as follows:
+
+| Type of protection | $X_2$ | $X_3$ |
+|:------------------:|:-----:|:-----:|
+| Hard hat           |  $1$  |  $0$  |
+| Bump cap           |  $0$  |  $1$  |
+| None               |  $0$  |  $0$  |
+
+The response function to be used in the study is $\mathop{\mathbb{E}}\{Y\} = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3$.
+
+a) Develop the response function for each type of pretection category.
+
+b) For each of the following questions, specify the $H_0$ and $H_a$ for the appropriate test with the appropriate symbols. b.1) When $X_1$ is fixed, does wearing a bump cap reduce the expected severity of injury as compared with wearing no protection? b.2) When $X_1$ is fixed, is the expected severity of injury the same when wearing a hard hat as when wearing a bump cap?
