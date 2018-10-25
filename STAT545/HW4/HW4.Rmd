@@ -3,8 +3,8 @@ title: "STAT545 HW4"
 author: "Yi Yang"
 date: "10/3/2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -274,13 +274,17 @@ The units of F is the same as the entropy, which is J/K.
 
 9. 
 ```{r, warning=FALSE}
-#examp <- em(digits,2)
-#Q <- examp$q
-#dim(Q)
-#Entropy1 <- apply(Q,1,function(x) sum(-x*log(x)))
-#Entropy <- rep(0,length(Entropy1))
-#Entropy[Entropy1>0] <- Entropy1[Entropy1>0]
-#show_digit(digits[which(Entropy==max(Entropy)),])
+examp <- em(digits,2)
+Q <- examp$q
+dim(Q)
+# slog ignore zero logrithm
+slog <- function(val){
+  pos <- val > 0
+  val[pos] <- log(val[pos])
+  return(val)
+}
+Entropy <- apply(Q,1,function(x) sum(-x*slog(x)))
+show_digit(digits[which(Entropy == max(Entropy)),])
 ```
 
 
