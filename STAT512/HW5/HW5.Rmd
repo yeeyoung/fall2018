@@ -2,7 +2,9 @@
 title: "STAT512 Division 1 HW 5"
 author: "Yi Yang"
 date: "10/22/2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -22,3 +24,93 @@ The response function to be used in the study is $\mathop{\mathbb{E}}\{Y\} = \be
 a) Develop the response function for each type of pretection category.
 
 b) For each of the following questions, specify the $H_0$ and $H_a$ for the appropriate test with the appropriate symbols. b.1) When $X_1$ is fixed, does wearing a bump cap reduce the expected severity of injury as compared with wearing no protection? b.2) When $X_1$ is fixed, is the expected severity of injury the same when wearing a hard hat as when wearing a bump cap?
+
+**Solution:**
+a) Hard hat:
+$$\mathop{\mathbb{E}}\{Y\} = \beta_0 + \beta_2 + \beta_1X_1$$
+Bump cap:
+$$\mathop{\mathbb{E}}\{Y\} = \beta_0 + \beta_3 + \beta_1X_1$$
+None:
+$$\mathop{\mathbb{E}}\{Y\} = \beta_0 + \beta_1X_1$$
+
+b) b1. 
+$$H_0: \beta_3 \geq 0,\quad H_a: \beta_3 < 0$$
+b2.
+$$H_0: \beta_2 = \beta_3, \quad H_a: \beta_2 \neq \beta_3$$
+
+
+
+
+2. A tax consultant studied the current relation between selling price and assessed valuation of one-family residential dwelling in a large tax district by obtaining data for a random sample of $16$ recent sales transactions located on corner lots and $48$ transactions not located on corner lots. Data is in valuation.csv
+
+Assume the regression model is $Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \epsilon$
+
+a) Plot the sample data for the two populations (corner lots vs noncorner lots) in one scatter plot with different symbolic mark for each population. Do you think the regression relations are the same for the two population?
+
+b) Test for identity of the regression functions for dwellings on corner lots and dwellings in other locations. $\alpha = 0.05$.
+
+**Solution:**
+a)
+```{r, warning=FALSE}
+val <- read.csv('data/valuation.csv', header = TRUE)
+y <- val$y
+x1 <- val$x1
+x2 <- val$x2
+require('lattice')
+xyplot(y~x1, group=x2, data=val)
+```
+It seems the regression relations are not the same by oberserving the scatter plot.
+
+b) The hypothesis test is given by 
+$$H_0: \beta_2 = 0, \quad H_a: \beta_2 \neq 0$$
+```{r, warning=FALSE}
+val.mod <- lm(y~x1 + x2, val)
+summary(val.mod)
+anova(val.mod)
+qf(0.95,1,61)
+```
+The partial F test is given by 
+$$F^\ast = \frac{SSR(X_2|X_1)/1}{MSE} = \frac{453.1}{16.8} = 26.97$$
+The critical value at significance level $\alpha = 0.05$ is $3.998494$, which is less than $F^\ast$. Therefore, the null hypothesis can be rejected, the two regression functions are not identical.
+
+
+
+3. (Use R for the question) A personnel officer in a governmental agency administered four newly aptitudde tests to each of the 25 applicants for entry level clerical positions in the agency. For purpose of study, all 25 applicants were accepted for positions irrespective of their test scores. After a probationary period, each applicant was rated for proficiency on the job. The scores on the four tests ($X_1, X_2, X_3, X_4$) and the job proficiency score ($Y$) for the 25 employees were recorded in proficiency.csv
+
+a) Obtain the scatter plot matrix and the correlation matrix of the $X$ variables, what do the scatter plots suggest about the nature of the function relationship between the response variable and each of the predictor variables?
+
+b) Fit the multiple function containing all four predictors at first order terms. Does it appear that all predictor variables should be retained?
+
+c) Select the best subset regression models according to the $R^2_{}adj$, $C_p$, $AIC_p$, $BIC_p$, and $PRESS$
+
+and discuss your selection. Fit the model to the data in proficiency.csv
+
+d) To assess internally the predictive ability of the regression model identified in c), compare the PRESS and SSE, what does this comparison suggest about the validity of MSE as in indicative of the predictive ability of the fitted model?
+
+e) Run a 5 fold cross validation on the model identified in c).
+
+f) To assess externally the validity of the regression model identified in c), 25 additional applicants for entry-level clerical positions in the agency were similarly tested and hired irrespective of their test scores. The data is in proficiencyTest.csv
+
+Fit the model identified in c) to the validation data set. Compare the regression coefficients and their estimated standard deviation to the results in c). Do the estimates for the validation data set appear to be reasonably similar to those obtained for the model-building data set (proficiency.csv)?
+
+**Solution:**
+
+a) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
