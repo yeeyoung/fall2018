@@ -96,13 +96,53 @@ Fit the model identified in c) to the validation data set. Compare the regressio
 **Solution:**
 
 a) 
+```{r, warning=FALSE}
+prof <- read.csv('data/proficiency.csv',header = TRUE)
+plot(prof)
+```
+From scatter plot, the response variable has a strong linear relationship with $X_3$ and $X_4$, but has the least relationship with $X_2$.
 
+b. 
+```{r, warning=FALSE}
+prof.mod <- lm(y~x1+x2+x3+x4, prof)
+summary(prof.mod)
+```
+The multiple linear regression function is given by
+$$Y = -124.38 + 0.286X_1 + 0.048X_2 + 1.306X_3 + 0.520X_4$$
+From the T test results in the summary table, $X_1$, $X_3$ and $X_4$ should be retained in the model.
 
+c) 
+```{r, warning=FALSE}
+library(ALSM)
+plotmodel.s(prof[,2:5],prof[,1])
+library('leaps')
+BestSub(prof[,2:5],prof[,1],num=1)
+```
+From $R^2_{adj}$, it reveals that subset $X_1, X_3, X_4$ has $R^2_{adj} = 0.9560$ which attains the lowest increasing rate. Other selection critia also gives the same result.
 
+d) Based on the comparison between $PRESS = 471.4520$ and $SSE = 348.1970$, it implies there is a large bias exixsts if we rely on the SSE criteria. Therefore, MSE is not a good indicator of the predictive ability of the fitted model.
 
+e) 
+```{r, warning=FALSE}
+library(MASS)
+library(leaps)
+library(caret)
+set.seed(123)
+train.control <- trainControl(method = 'cv',number = 5)
+step.model1 <- train(y~x1+x3+x4,data=prof,method='leapBackward',tuneGrid=data.frame(nvmax=3),
+                     trControl=train.control)
+step.model1
+```
 
-
-
+f) 
+```{r, warning=FALSE}
+prof.test <- read.csv('data/proficiencyTest.csv', header = TRUE)
+colnames(prof.test) <- c('ytest','x1test','x2test','x3test','x4test')
+prof.test.mod <- lm(ytest~x1test+x3test+x4test,prof.test)
+summary(prof.test.mod)
+summary(lm(y~x1+x3+x4,prof))
+```
+By comparing the coefficients and their standard deviation of the fitting model over the training data set and the test data set, it is concluded that the two regression functions are reasonably similar to each other.
 
 
 
