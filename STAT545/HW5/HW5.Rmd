@@ -1,0 +1,69 @@
+---
+title: "STAT545 HW 5"
+author: "Yi Yang"
+date: "10/27/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1 Problem 1: Exponential family distribution
+This continues from parts (a) and (b) Problem 1 from Homework 4 on exponential family distibiutions.
+
+1. Consider a random variable $x$ that can take $D$ values and that is distributed according to the discrete distribution with parameter $\overrightarrow{\pi}$, We will write this as $p(x|\overrightarrow{\pi})$, with $p(x=c|\overrightarrow{\pi}) = \pi_c$ for $c \in \{1,\dots, D\}$.
+
+c) What is the form of the conjugate prior on the parameters of $p(x|\pi)$? You only need to write it upto a multiplicative constant (i.e., you don't have to write the normalization constant). What is its feature vector?
+
+d) If you call the natural parameters of this distribution $\overrightarrow{a} = (a_1,\dots)$ (part (c) will give the the dimensionality of $\overrightarrow{a}$), what are the parameters of the posterior distribution given a set of observations $X = (x_1,\dots,x_N)$? (The point here is that in general the posterior distribution can be very complicated, even for the simple priors (so that we need methods like MCMC). However for conjugate priors, the posterior lies in the smae family as the prior, it just has different parameters)
+
+2. Let $x$ be Poisson distribution with mean $\lambda$. Repeat parts (c) and (d).
+
+3. Let $x$ be a $1$-dimensional Gaussian with mean $\mu$ and variance $\sigma^2$. Repeat parts (c), (d) (Note: both $\mu$ and $\sigma^2$ are parameters).
+
+4. Let $x$ follow a geometric distribution with success probability $p$: ($Pr(X = k) = (1 - p)^kp$ for $k = 0,1,2,\dots$). Repeat parts (c), (d).
+
+**Solution:**
+
+
+
+
+
+## 2 Problem 2: Gradient descent for blind source separation
+Let $Y$ be a $3\times T$ matrix consisting of three independent audio recordings. Each column $\mathbf{y}_t = (y_{1t}, y_{2t}, y_{3t})^\top$ consists of the intensities of each source at time $t$. Even though each audio signal is a time-series, we will model the $y_{ij}$ ’s as i.i.d. draws from the hyperbolic secant distribution $p(y) = \frac{1}{\pi\cosh(y)}$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
