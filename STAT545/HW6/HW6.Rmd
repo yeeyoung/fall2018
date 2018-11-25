@@ -1,0 +1,181 @@
+---
+title: "STAT545 HW 6"
+author: "Yi Yang"
+date: "11/22/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1 Problem 1: Generating gamma random variables via rejection sampling
+
+We will first generate an exponential random variable.
+
+1. Let $U$ be a Uniform(0,1) random variable. How will you transform this to generate an exponential with rate $\lambda$? Use the inverse-cdf method.
+
+2. Let $Y$ be a random variable on $[0,1)$, with density $p(Y=y)\propto 1/y^a$, where $a\in (0,1)$. This is the truncated Pareto distribution. What is its normalization constant? Describe the inverse-cdf method to generate $Y$ by transforming $U$.
+
+3. Write down the density of a Gamma random variable with shape parameter $\alpha$ and rate parameter $\beta$. Call this $p_{Gamma}(x|\alpha,\beta)$. Note that calculating its cdf is not easy.
+
+4. Note that the sum of two exponentials with rate 1 is distributed as Gamma(2,1). How would you use previous results to sample from a Gamma distribution with parameters (alpha_int,1), where alpha_int is an integer.
+
+Next, we will generate a Gamma random variable, with alpha < 1
+
+5. For $\alpha < 1$, $p_{Gamma}(x|\alpha,1) \leq C_1 x^{\alpha-1}$ for $x < 1$, and $p_{Gamma}(x) \leq C_2\exp(-x)$ for $x\geq 1$. What are $C_1$ and $C_2$?
+
+6. Use this information to write down a probability density $q(x|\alpha)$ and a scalar $M$ such that $p_{Gamma}(x|\alpha,1) \leq M\cdot q(x|\alpha)$.
+
+7. Now provide pseudocode for a rejection sampler to smaple from $p_{Gamma}(x|\alpha,1)$. Write down the acceptance probability.
+
+8. How would you use this to generate a Gamma with arbitrary shape parameter, and rate equal to one. How about arbitrary shape and rate parameters?
+
+**Solution:**
+
+1. The CDF of an exponential distribution is given by
+$$F(x) = 1 - e^{-\lambda x}$$
+If $P = F(X)$ is uniformly disributed, the inverse of the $F(p)$ satisfies an exponential distribution. That is,
+$$F^{-1}(p) = -\frac{\log(1-p)}{\lambda}\sim \text{Expon}(\lambda)$$
+where $p$ is an random variable uniformly distributed.
+
+2. The normalization constant for the truncated Pareto distribution is given by
+$$Z_Y = \int_{0}^{1}\frac{1}{y^a}dy = \frac{1}{1-a}$$
+The PDF of Pareto distribution is given by
+$$p(Y=y) = \frac{1-a}{y^a}$$
+The CDF of Pareto distribution is given by
+$$F(Y \leq y) = \int_{0}^y \frac{1-a}{t^a}dt = y^{1-a}$$
+The Pareto distribution can be sampled from a uniform distribution by inverting the CDF of the Pareto distribution.
+$$F^{-1}(U) = U^{a-1}\sim \text{Pareto}(a)$$
+3. The density function of a Gamma distribution is given by
+$$p_{Gamma}(x|\alpha,\beta) = \frac{1}{\Gamma(\alpha)}x^{\alpha-1}\beta^{\alpha}\exp(-\beta x)$$
+with $x > 0$ and $\alpha, \beta > 0$.
+
+4. From the stated results, it is implied that if $X_i\overset{\text{iid}}{\sim}\text{Expon}(\lambda)$, then $Y = X_1 + X_2 + \dots + X_k \sim \text{Gamma}(k,\lambda)$. Independently draw alpha_int samples from exponential distribution $\text{Expon}(1)$, add them up will give a Gamma distribution with parameter (alpha_int,1).
+
+5. The $C_1$ and $C_2$ are given by
+$$C_1 = \max_{\substack{0<x<1\\ 0<\alpha < 1}}\{\frac{1}{\Gamma(\alpha)}\exp(-x)\} = \frac{1}{\Gamma(\alpha)}$$
+$$C_2 = \max_{\substack{x\geq 1\\ 0<\alpha < 1}}\{\frac{1}{\Gamma(\alpha)}x^{\alpha-1}\} = \frac{1}{\Gamma(\alpha)}$$
+
+6. The probability density can be given as
+$$q(x|\alpha) = \frac{x^{\alpha-1}}{\frac{1}{\alpha}+e^{-1}} \quad \text{for }0<x<1$$
+$$q(x|\alpha) = \frac{\exp(-x)}{\frac{1}{\alpha}+e^{-1}} \quad \text{for }x\geq 1$$
+The scalar coefficient is given by $M = \frac{1}{\Gamma(\alpha)}\left(\frac{1}{\alpha} + e^{-1}\right)$.
+
+7. The pseudocode for rejection sampling is given by
+```{r, eval=FALSE}
+Sample xs ~ q(x|alpha)
+Sample u ~ Unif(0,1)
+if (u > pGamma(xs|alpha,1)/(M*q(xs|alpha))){
+  xs is rejected
+} else{
+  xs is accepted
+}
+```
+
+The acceptance probability is given by 
+$$p(\text{accept}) = \int \frac{p_{Gamma}(x|\alpha,1)}{Mq(x|\alpha)}q(x|\alpha)dx = \frac{1}{M}\int p_{Gamma}(x|\alpha,1)dx = \frac{1}{M}$$
+
+8. In the previous pseudocode, we see that $q(x|\alpha)$ is a combination of the trancated Pareto distribution and the exponential distribution. Therefore, we can apply the pseudocode in 7 to sample a Gamma distribution with arbitray shape parameter and the unity rate parameter.
+
+For a Gamma distribution with arbitray shape parameter and rate paramter, let us consider $q(x|\alpha,\beta) = p_{Gamma}(k,\beta-1)$, where $k = \text{Floor}(\alpha)$. The ratio of the Gamma density to the new proposal probability is 
+$$\frac{p_{Gamma}(x|\alpha,\beta)}{q(x|\alpha,\beta)} = \frac{\Gamma(k)\beta^\alpha}{\Gamma(\alpha)(\beta-1)^k}x^{\alpha-k}\exp(-x)$$
+This ratio obtains its maximum when $x = \alpha - k$. Therefore, seting $M = \frac{p_{Gamma}(\alpha-k|\alpha,\beta)}{p_{Gamma}(\alpha-k|k,\beta-1)}$ and proceed the rejection sampling will give samples from a Gamma distribution with arbitray shape and rate parameter.
+
+## 2 Problem 2: Exploring the space of permutations with Metropolis-Hastings
+
+The file message.txt on the course webpage gives a paragraph of English encoded by a permutation code, where every symbol is mapped to a (usually) different one. The encryption key $\sigma$ might thus be:
+$$a \rightarrow v;b \rightarrow l; c \rightarrow n; d \rightarrow \cdot; \dots$$
+and a message like "beware of dog." mgght read as "lgavfgp wp. c". To make life simple, assume there are only 30 unique symbols, Symbol = ('a','b',...,'z','.',',',' ' and ':'). Thus the encription is a bijective function $\sigma$: Symbol $\rightarrow$ Symbol. Your job is to recover the original message (or equivalently find $\sigma$).
+
+1. How many possible functions $\sigma$ are there?
+
+Clearly, brute force search is impossible. instead, we will fit and use a model of the English language. 
+
+Download a large corpus of English (I used 'War and Peace' from Project Gutenberg.) Use your favourite text-editor to cover all text to lowercase. You might also want to delete some of the clutter at the beginning and the end of the file.
+
+2. Read the file into R using the readChar() command. This will return a long string, split it up into a list of characters using the strsplit() command. The table() command will then give you the frequency of each unique character. This text contains more characters than we are interested in (we only care about Symbol). Extract the appropriate symbols from the table, and calculate and plot a histogram of the frequency of each character in Symbol. What is the entropy of this distribution? (This is a very crude estimate of the entropy of the English language, if you are interested, see http://www.math.ucsd.edu/~crypto/java/ENTROPY/) for how Shannon got a better (model-free) estimate using human subjects.)
+
+We will actually model English text as a first-order Markov process, characterized by a 30 X 30 transition matrix $T$. We will write this as $P_{Eng}(\cdot|T)$ (assume the distribution of the first symbol is uniform).
+
+3. Given some data $D$, what are its sufficient statistics? These don't have to be minimal. What is the joint probability? What is the maximum likelihood estimate of $T$ given $D$?
+
+4. Now estimate $T$ for the English text you download. The simplest way to do this is by understanding what table() with two arguments does and then running table(txt[1:length_txt-1], txt[2:length_txt]). Plot the estimated $T$ using a heatmap. For which symbols does the distribution of the following symbol have the largest and smallest entropy?
+
+We can now write a Bayesian model to estimate the permutation $\sigma$. We place a uniform prior over $\sigma$:
+$$p(\sigma)\propto 1$$
+Given a message $X$ encoded with $\sigma$, we expect $\sigma^{-1}(X)$ to be English text. We can evaluate the probability it is English using our Markov model of English:
+$$p(X|\sigma) = P_{Eng}(\sigma^{-1}(X)|T)$$
+
+
+
+
+**Solution:**
+
+1. There are $30!$ possibilities of $\sigma$.
+
+2. 
+```{r, warning=FALSE}
+fileName <- 'war-and-peace.txt'
+warofpeace <- readChar(fileName, file.info(fileName)$size)
+wopList <- strsplit(warofpeace,'')
+wopList <- wopList[[1]]
+table(wopList)
+wopList_rev <- sub('[^a-z\\.\\,\\: ]','',wopList)
+wopTable <- table(wopList_rev)
+#wopTable <- wopTable[, !names(wopTable) %in% c('')]
+#wopTable
+names(wopTable)
+wopDF <- data.frame(cha=names(wopTable),freq=as.vector(wopTable))
+```
+```{r, warning=FALSE}
+#wopDF 
+wop.df <- wopDF[-c(1),]
+row.names(wop.df) <- seq(1,30)
+library(ggplot2)
+ggplot(data=wop.df, aes(cha, freq)) + geom_bar(stat = 'identity', width = 1, color = 'black', fill = 'green') +
+  theme(axis.text.x=element_text(angle = 0, hjust=1))
+wop.df_freq <- wop.df$freq/sum(wop.df$freq)
+entropy <- - sum(wop.df_freq * log(wop.df_freq))
+entropy
+```
+The entropy of a discrete distribution is given by
+$$\mathbb{H}(X) = - \sum_{k=1}^K p(X=k)\log p(X = k)$$
+Hence, the entropy for this distribution is $2.915402$.
+
+3. The sufficient statistic is a function $\phi(X)$ whose value contains all the information needed to compute any estimate of the parameter. According to the factorization theorem, the joint probability is given by $p(X) = h(X)g(\theta,\phi(X))$. From the joint likelihood probability, it can be seen the maximum likelihood estimate of $\theta$ depends only on $\phi(X)$, which satifies $\frac{\partial g(\theta,\phi(X))}{\partial \theta} = 0$.
+
+4. The estimate of $T$ and the heatmap of $T$ are given as follows,
+```{r, warning=FALSE}
+Trans <- table(wopList_rev[1:length(wopList_rev)-1],wopList_rev[2:length(wopList_rev)])
+Trans <- Trans[2:31,2:31]
+row.sums <- rowSums(Trans)
+for (i in seq(1,30)){
+  Trans[i,] <- Trans[i,]/row.sums[i]
+}
+Trans <- as.matrix(Trans)
+Trans
+heatmap(Trans, Colv=NA, Rowv=NA)
+```
+Largest and smallest entropy? How to get?
+
+5. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+---
+title: "Hostel"
+author: "Yi Yang"
+date: "11/23/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE}
+library(stringr) # install stringr for number extraction
+
+hostel <- read.csv('data/Hostel.csv', header=T)
+hostel <- subset(hostel, select = -c(1,2)) # remove old index column, and hostel name column
+hostel <- na.omit(hostel) # remove rows that contain one or more NAs
+
+# rapply(hostel, function(x) length(unique(x))) # number of unique values in each column
+# table(hostel$City) # city count 
+hostel <- subset(hostel, City %in% c('Kyoto', 'Osaka', 'Tokyo') ) # get hostels from 'Kyoto', 'Osaka', 'Tokyo'
+
+# distance: extract distance from string and convert it from str type to int
+# e.g. 5.9km from city centre -> 5.9
+hostel[3] <- rapply(hostel[3], function(x) as.numeric( sub("km from city centre", "", x)) )
+
+rownames(hostel) <- 1:nrow(hostel) # reindex
+#hostel
+
+colnames(hostel) <- c("City", "price.from", "Distance", "summary.score", "rating.band", "atmosphere", "cleanliness", "facilities", "location.y", "security", "staff", "valueformoney", "lon")
+# since we wanna regress on price.from, put it in the first column of our data frame
+# "City" and "rating.band" are qualitative variables, put them in the last column
+hostel <- hostel[,c("price.from", "Distance", "summary.score", "atmosphere", "cleanliness", "facilities", "location.y", "security", "staff", "valueformoney", "lon", "City", "rating.band")]
+boxplot(hostel[,1:11])
+# From boxplot, we see outliers, so we need remove outliers in the data set
+library('outliers')
+for (i in seq(1,11)){
+  hostel[,i] <- rm.outlier(hostel[,i], fill = TRUE, median = TRUE, opposite = FALSE)
+}
+
+boxplot(hostel[,1:11])
+# if you like, you can compute correlation matrix here
+#cor(hostel[,1:11])
+# plot scatter plot to roughly examine the linear relations
+plot(hostel[,1:11])
+hostel.mod <- lm(price.from~., hostel)
+summary(hostel.mod)
+
+library(car)
+# plot residual plot is time-consuming.
+#residualPlots(hostel.mod)
+#names(hostel)
+plot(hostel.mod)
+
+# Diagnosis
+# test the constancy of variance using Brown-Forsythe test
+library(onewaytests)
+hostel.df <- hostel
+hostel.df$fit <- hostel.mod$fitted.values
+hostel.df$resid <- hostel.mod$residuals
+hostel.df$group <- cut(hostel.df$fit, 5)
+bf.test(resid~group, hostel.df)
+# test normality
+shapiro.test(hostel.df$resid)
+# Boxcox
+library(MASS)
+bcmle <- boxcox(hostel.mod, lambda=seq(-3,3,by=0.1))
+lambda <- bcmle$x[which.max(bcmle$y)]
+lambda
+```

@@ -1,0 +1,30 @@
+---
+title: "STAT512 Division 1 HW 6"
+author: "Yi Yang"
+date: "11/5/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+An assistant in the district sales office of a national cosmetics firm obtained data on advertising expenditures and sales last year in the district's 44 territories. Data is cosmetics.csv
+
+X1: expenditures for point-of-sale displays in beauty salons and department stores (X$\$1000$).
+
+X2: expenditures for local media advertising.
+
+X3: expenditures for prorated share of national media advertising.
+
+Y: Sales (X$\$1000$).
+
+1. Test the regression relation between sales and the three predictor variables. State the hypotheses, test statistic and degree of freedom, the p-value, the conclusion in words.
+
+2. Determine whether the linear regression model is appropriate by using the 'usual' plots (scatter plot, residual plots, histogram/QQ plot). Explain in detail whether or not each assumption appears to be substantially violated.
+
+3. Prepare a partial regression plot for each of the predictor variables. Do your plots suggest that the regression relationship in the fitted regression function are inappropriate for any of the predictor variables? Explain.
+
+4. 

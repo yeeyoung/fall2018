@@ -1,0 +1,82 @@
+---
+title: "STAT545 Midterm1 Bonus"
+author: "Yi Yang"
+date: "11/16/2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Dynamic programming 
+Implement the overall algorithm to compute the cost of $A_1\cdot A_2\cdot A_3\dots\cdot A_N$.
+```{r, warning=FALSE}
+# FORWARD FUNCTION TO CALCULATE THE COMPLEXITY OF CHAINE MULTIPLICATION OF MATRIX
+# mdim is the matrix dimension array
+Mult_Matrix_Chain <- function(mdim){
+  n <- length(mdim)
+  cost <- matrix(rep(0,n^2), nrow = n)
+  ind_interrupt <- matrix(rep(0,n^2), nrow = n)
+  
+  for (clip in seq(2,n-1)){
+    for (i in seq(1,n-clip)){
+      k <- i + clip - 1
+      cost[i,k] <- Inf
+      for (j in seq(i,k-1)){
+        temp <- cost[i,j] + cost[j+1,k] + mdim[i]*mdim[j+1]*mdim[k+1]
+        if(temp < cost[i,k]){
+          cost[i,k] <- temp
+          ind_interrupt[i,k] <- j
+        }
+      }
+    }
+  }
+  return(list(Optimal_total_cost=cost[1,n-1], index_interrupt=ind_interrupt))
+}
+
+# helper function to print out the multiplicative order
+printOrder <- function(i, k, Ind_interrupt){
+  if (i == k){
+    cat(paste0('A',i))
+  }
+  else {
+    cat('(')
+    printOrder(i, Ind_interrupt[i,k], Ind_interrupt)
+    printOrder(Ind_interrupt[i,k]+1, k, Ind_interrupt)
+    cat(')')
+  }
+}
+```
+
+Let's test this function as follows
+
+```{r, warning=FALSE}
+mdim <- c(2,2,2)
+rslt <- Mult_Matrix_Chain(mdim)
+rslt
+printOrder(1,length(mdim)-1,rslt$index_interrupt)
+```
+This is the multiplication of two $2\times 2$ matrix.
+
+```{r, warning=FALSE}
+mdim <- c(1,2,3,4,5)
+rslt <- Mult_Matrix_Chain(mdim)
+rslt
+printOrder(1,length(mdim)-1,rslt$index_interrupt)
+```
+This is the multiplication of four matrices: $A_1\in \mathcal{R}^{1\times 2}, A_2\in \mathcal{R}^{2\times 3}, A_3\in \mathcal{R}^{3\times 4}$ and $A_4\in \mathcal{R}^{4\times 5}$.
+
+
+
+
+
+
+
+
+
+
+
+
