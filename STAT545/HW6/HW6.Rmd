@@ -109,6 +109,21 @@ $$p(\sigma)\propto 1$$
 Given a message $X$ encoded with $\sigma$, we expect $\sigma^{-1}(X)$ to be English text. We can evaluate the probability it is English using our Markov model of English:
 $$p(X|\sigma) = P_{Eng}(\sigma^{-1}(X)|T)$$
 
+5. Write a function for this likelihood. It should take a transition matrix $T$, a message $X$ (or the sufficient statistics of $X$) and a permutation perm, and calculate the log-probability. (I implemented the permutation as a named-list, so that e.g. perm['a'] gives 'v'). We are interested in the posterior $p(\sigma|X) \propto p(X|\sigma)p(\sigma)$.
+
+6. Explain briefly why directly sampling from this is not easy.
+
+Instead, we will use a simple Metropolis-Hastings algorithm. Start with an arbitray permutation (I used the identity map). Randomly pick two symbols and propose a new permutation that swaps these values of the pervious permutation.
+
+7. Write down the proposal distribution and the acceptance probability?
+
+8. Finally implement this MH algorithm and run it on message.txt. I recovered the (almost perfect) answer after about 3000 iterations. Plot the evolution of the likelihood over your MCMC run. Also print the first 20 characters of the decoded message every 100 iterations. It might help to start by using your own encoded message where you know the true answer. Specify how many iterations your ran it for and what your burn-in period was.
+
+9. Under the posterior distirbution, which of the oberved symbols had the highest and lowest uncertainty about their true value? Which ones did it seem to get wrong?
+
+10. Consider an i.i.d. model of English text, where we assume the next symbol is drawn from the solution to part 2? Does this work? All you have to do is change the function from part 5. Again, plot the decoded output every 100 iterations.
+
+11. Comment on the usefulness and feasibility of using higher-order Markov models for decoding (where the next symbol depends e.g. on the previous two or five symbols).
 
 
 
@@ -161,12 +176,91 @@ heatmap(Trans, Colv=NA, Rowv=NA)
 ```
 Largest and smallest entropy? How to get?
 
-5. 
+5. The likelihood function can be calculated as follows,
+```{r, warning=FALSE}
+# initialize a permutation function
+wop <- wopList_rev[!wopList_rev %in% '']
+wop.table.freq <- table(wop)
+symbols <- names(wop.table.freq)
+perm <- symbols
+names(perm) <- symbols
+# define the decode function
+decode <- function(perm, encoded.msg){
+  perm.inv <- names(perm)
+  names(perm.inv) <- as.vector(perm)
+  decoded.msg <- sapply(encoded.msg, function(x) perm.inv[x],USE.NAMES = FALSE)
+  return(unname(decoded.msg))
+}
+#wop[1:11]
+# helper function slog
+slog <- function(x) return(ifelse(x==0,0,log(x)))
+# calculate the log likelihood
+cal_log_likelihood <- function(transition, decoded.msg){
+  len.decoded.msg <- length(decoded.msg)
+  probs <- mapply(function(x,y) return(slog(transition[x,y])), decoded.msg[1:len.decoded.msg-1], decoded.msg[2:len.decoded.msg])
+  return(sum(probs))
+}
+#decoded.msg <- decode(perm,wop[1:11])
+#decoded.msg
+#cal_log_likelihood(Trans, decoded.msg)
+```
 
+6. Directly sampling from the posterior probability (or likelihood when prior is uniform) is not easy since the distribution is expressed in a matrix form and the the smapling variable is a functional mapping $\sigma$. There is no direct way to sample a mapping $\sigma$ from a matrix-form PMF (probability mass function).
 
+7. The proposal distirbution is given as a uniform distribution, which demands the sampling from it is to randomly swapping the mappling of two pairs of symbols in $\sigma$. The proposal distirbution is then given by
+$$q(\sigma^\ast|\sigma^{(n)}) = \frac{1}{30\times 29} = \frac{1}{870}$$
+The stationary distribution of the Markov chain should be the posterior or the likelihood when prior is uniform. Hence, the acceptance probability is given as
+$$\alpha = \frac{P(X|\sigma^\ast)q(\sigma^{(n)}|\sigma^\ast)}{P(X|\sigma^{(n)})q(\sigma^\ast|\sigma^{(n)})} = \frac{P(X|\sigma^\ast)}{P(X|\sigma^{(n)})}$$
+Since the proposal is symmetric. In the acceptance probabiliy, $\sigma^{(n)}$ is the state of $\sigma$ at the n-th step of the Markov chain, $\sigma^\ast$ is the new updated state.
 
+8. The Matrapolis Hasting Algorithm is implemented as follows,
+```{r, warning=FALSE}
+MH <- function(transition, perm, encoded.msg, max.iter=3000){
+  set.seed(12)
+  len.perm <- length(perm)
+  
+  old.perm <- perm
+  old.decoded.msg <- decode(old.perm, encoded.msg)
+  old.loglikelihood <- cal_log_likelihood(transition, old.decoded.msg)
+  list.loglikelihood <- c()
+  list.decoded.msg <- c()
+  
+  iter <- 0
+  while (iter < max.iter) {
+    # sampling according to the proposal distribution
+    idx.swap <- sample(1:len.perm, 2)
+    perm <- old.perm
+    perm[idx.swap[1]] <- old.perm[idx.swap[2]]
+    perm[idx.swap[2]] <- old.perm[idx.swap[1]]
+    decoded.msg <- decode(perm, encoded.msg)
+    loglikelihood <- cal_log_likelihood(transition, decoded.msg)
+    
+    # accept or reject the updated sigma
+    if (runif(1) < exp(loglikelihood - old.loglikelihood)){
+      old.perm <- perm
+      old.decoded.msg <- decoded.msg
+      old.loglikelihood <- loglikelihood
+    }
+    
+    if ((iter + 1) %% 100 == 0){
+      list.loglikelihood <- c(list.loglikelihood, old.loglikelihood)
+      list.decoded.msg <- c(list.decoded.msg, paste(old.decoded.msg[1:20],collapse = ''))
+    }
+    iter <- iter + 1
+  }
+  return(list(list.loglikelihood = list.loglikelihood, list.decoded.msg = list.decoded.msg, perm = perm))
+}
 
-
+filename.msg <- 'message.txt'
+msg <- readChar(filename.msg, file.info(filename.msg)$size)
+msg <- sub('\n','',msg)
+msg <- strsplit(msg,'')[[1]]
+rslt <- MH(Trans, perm, msg)
+plot(1:length(rslt$list.loglikelihood), rslt$list.loglikelihood, xlab = "iter*100", ylab = "log likelihood")
+msg[1:20]
+rslt$list.decoded.msg
+rslt$perm
+```
 
 
 
