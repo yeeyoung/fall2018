@@ -128,18 +128,34 @@ b) The confidence interval is $[-3.4406818,\;-0.5593182]$. A contrast between fa
 oneway(premium$y,premium$design,alpha=0.1, mc=matrix(c(-1,1,0,0,0),1,5))$Contrast.NOT.simultaneous
 ```
 
-c) 
-
+c) For pairwise comparisons, we know $s^2\{L\} = MSE\cdot \frac{1}{10} = 0.752$ and $B = t(1-\frac{\alpha}{2g};n_T-r) = 2.159448$. The simultaneous CI is computed with $\hat{L} \pm Bs\{L\}$.
+```{r}
+qt(1-0.1/2/3,95)
+```
 4. Refer to problem 1, suppose primary interest is in estimating the following comparisons:
 $$L_1 = \frac{\mu_1 + \mu_2}{2} - \mu_5$$
 $$L_2 = \frac{\mu_1 + \mu_2}{2} - \frac{(\mu_3 + \mu_4)}{2}$$
+
 a)Obtain a $90\%$ confidence interval for individual comparision.
 
 b) Obtain a $90\%$ simultaneous confidence interval for the two comparisons.
 
+**Solution:**
 
+a) 
+$$\hat{L}_1 = \frac{24.55+22.55}{2} - 30.1 = -6.55$$
+$$\hat{L}_2 = \frac{24.55+22.55}{2} - \frac{11.75+14.8}{2} = 10.275$$
+$$s^2\{L_1\} = MSE\cdot \frac{1.5}{20} = 0.564\quad s^2\{L_2\} = MSE\cdot \frac{1}{20} = 0.376$$
+$$\text{qt}(1-\alpha/2;n_T-r) = 1.661052$$
+```{r, warning=FALSE}
+qt(1-0.1/2,95)
+qt(1-0.1/2/2,95)
+```
+The CI for individual comparison is given by $\hat{L}_1 \pm s\{L_1\}1.661052 = [-7.797,\;-5.303]$ and $\hat{L}_2 \pm s\{L_2\}1.661052 = [9.256,\;11.294]$.
 
-
+b) The Bonferroni simultaneous confidence interval
+$$B = qt(1-\alpha/2g;n_T-r) = 1.985251$$
+The CI is given by $\hat{L}_1 \pm s\{L_1\}1.985251 = [-8.041,\;-5.059]$ and $\hat{L}_2 \pm s\{L_2\}1.985251 = [9.058,\;11.492]$.
 
 5. A computer software firm was encountering difficulties in forcasting the programmer requirements for large-O scale programming projects. Twenty-four programmers are classified into equal groups by type of experience (factor A) and amount of experience (factor B) were asked to predict the number of programmer days required to complete a large project about to be initiated. After this project was completed, the prediction errors (actual minus predicted programmer-days) were determined. The data is in programmer.txt
 ![](5.png)
@@ -152,9 +168,42 @@ c) Test whether the two factors interact; use 0.01 significant level.
 
 d) Test whether the main effects are present, use 0.01 significant level.
 
+**Solution:**
 
+a)
+```{r, warning=FALSE}
+programmer <- read.table('programmer.txt', header = FALSE, col.names = c('y','A','B','ord'), colClasses = c('numeric','factor','factor','numeric'))
+summary(programmer)
+```
+```{r}
+prog.mod <- lm(y~A*B,programmer)
+summary(prog.mod)
 
+prog.stat <- model.tables(aov(y~A*B,data=programmer), type="means",se=T)
+A.means <- prog.stat$tables$A
+B.means <- prog.stat$tables$B
+plot(A.means,xaxt='n')
+plot(B.means,xaxt='n')
+cell.means <- prog.stat$tables$`A:B`; cell.means
+```
+From the estimated means plots, the interaction effects is significant.
 
+b)
+```{r}
+summary(aov(prog.mod))
+```
+From ANOVA table, we know type of experience accounts for most of the total variability.
+
+c)
+$$H_0: \text{all } (\alpha\beta)_{ij} \text{ equal zero}, H_a: \text{not all } (\alpha\beta)_{ij} \text{ equal zero.}$$
+The test statistic is given by $Fs = 10, 083/86 = 117.07$, since $F(0.99;2,18) = 6.01 < Fs$. $H_0$ is rejected.
+
+d)
+For A:
+$$H_0: \alpha_1 = \alpha_2 = 0,\quad H_a: \text{not both } \alpha_1 \text{ and } \alpha_2 \text{ equal zero.} $$
+The test statistic is given by $Fs = 39447/86 = 458.02$, since $F(.99;1,18) = 8.29$, which is less than $Fs$, so $H_0$ is rejected.
+For B:
+$$H_0: \text{all } \beta_j \text{ equal zero } (j = 1, 2, 3),\quad H_a: \text{ not all } \beta_j \text{ equal zero.}$$ Since $Fs = 18206/86 = 211.39 > F(0.99;2,18) = 6.01$. $H_0$ is rejected.
 
 6.Refer to question 5.
 
